@@ -1,7 +1,6 @@
-﻿using Finance.Models;
+using Finance.Models;
 using Finance.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Finance.Controllers
 {
@@ -35,7 +34,7 @@ namespace Finance.Controllers
         {
             await _despesaService.CreateAsync(newDespesa);
 
-            return CreatedAtAction(nameof(Get), new {id = newDespesa.Id }, newDespesa);
+            return CreatedAtAction(nameof(Get), new { id = newDespesa.Id }, newDespesa);
         }
 
         [HttpPut("{id:length(24)}")]
@@ -43,14 +42,22 @@ namespace Finance.Controllers
         {
             var despesa = await _despesaService.GetAsync(id);
 
-            if(despesa == null)
+            if (despesa is null)
             {
                 return NotFound();
             }
 
-            updatedDespesa.Id = despesa.Id;
+            despesa.DespesaNome = updatedDespesa.DespesaNome;
+            despesa.Valor = updatedDespesa.Valor;
 
-            return NoContent();
+            await _despesaService.UpdateAsync(id, despesa);
+
+            return Ok(new
+            {
+                despesa.Id,
+                despesa.DespesaNome,
+                despesa.Valor
+            });
         }
 
         [HttpDelete("{id:length(24)}")]
