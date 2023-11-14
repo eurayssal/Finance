@@ -35,7 +35,7 @@ namespace Finance.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(Despesa newDespesa)
         {
-            await _despesaService.CreateAsync(newDespesa);
+            await _despesaService.CreateAsync(newDespesa, newDespesa.Data);
 
             return CreatedAtAction(nameof(Get), new { id = newDespesa.Id }, newDespesa);
         }

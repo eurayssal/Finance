@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 const LancamentoDespesasView = () => {
     const [despesas, setDespesas] = useState<Array<IDespesa>>([]);
-    const [novaDespesa, setNovaDespesa] = useState({ nome: '', valor: '' });
+    const [novaDespesa, setNovaDespesa] = useState({ nome: '', valor: '', data: '' });
     const [editandoDespesa, setEditandoDespesa] = useState<IDespesa | null>(null);
     const [somaDespesas, setSomaDespesas] = useState<number>(0);
 
@@ -15,7 +15,8 @@ const LancamentoDespesasView = () => {
     const getDespesas = async () => {
         try {
             const response = await api.get<Array<IDespesa>>('api/despesa');
-            setDespesas(response.data);
+            const despesasOrdenadas = response.data.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+            setDespesas(despesasOrdenadas);
         } catch (error) {
             console.log('Erro ao obter despesas: ', error);
         }
@@ -24,7 +25,7 @@ const LancamentoDespesasView = () => {
     const postDespesa = async () => {
         try {
             await api.post('api/despesa', novaDespesa);
-            setNovaDespesa({ nome: '', valor: '' });
+            setNovaDespesa({ nome: '', valor: '', data: '' });
             getDespesas();
         } catch (error) {
             console.log('Erro ao adicionar despesa: ', error);
@@ -42,7 +43,7 @@ const LancamentoDespesasView = () => {
                 });
 
                 setEditandoDespesa(null);
-                setNovaDespesa({ nome: '', valor: '' });
+                setNovaDespesa({ nome: '', valor: '', data: '' });
                 getDespesas();
             }
         } catch (error) {
@@ -52,7 +53,7 @@ const LancamentoDespesasView = () => {
 
     const cancelarEdicao = () => {
         setEditandoDespesa(null);
-        setNovaDespesa({ nome: '', valor: '' });
+        setNovaDespesa({ nome: '', valor: '', data: '' });
     };
 
     const excluirDespesa = async (despesa: any) => {
@@ -72,6 +73,15 @@ const LancamentoDespesasView = () => {
             console.log('Erro: ', error)
         }
     }
+
+    const getFormattedDate = (isoDate: string | number | Date) => {
+        const date = new Date(isoDate);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Mês começa do 0
+        const year = date.getFullYear();
+
+        return `${day}/${month}/${year}`;
+    };
 
     useEffect(() => {
         getDespesas();
@@ -96,7 +106,7 @@ const LancamentoDespesasView = () => {
             <ul>
                 {despesas.map((despesa) => (
                     <li key={despesa.id}>
-                        {despesa.nome} - R$ {despesa.valor}
+                        {despesa.nome} - R$ {despesa.valor} - Data: {getFormattedDate(despesa.data)}
                         <button onClick={() => setEditandoDespesa(despesa)}>Editar</button>
                         <button onClick={() => excluirDespesa(despesa)}>Excluir</button>
                     </li>
@@ -129,6 +139,14 @@ const LancamentoDespesasView = () => {
                         type="text"
                         value={novaDespesa.valor}
                         onChange={(e) => setNovaDespesa({ ...novaDespesa, valor: e.target.value })}
+                    />
+                </label>
+                <label>
+                    Data:
+                    <input
+                        type="date"
+                        value={novaDespesa.data}
+                        onChange={(e) => setNovaDespesa({ ...novaDespesa, data: e.target.value })}
                     />
                 </label>
                 <button type="submit">{editandoDespesa ? 'Editar Despesa' : 'Adicionar Despesa'}</button>

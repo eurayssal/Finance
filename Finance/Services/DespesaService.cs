@@ -20,14 +20,20 @@ namespace Finance.Services
                 despesaDatabaseSettings.Value.DespesaCollectionName);
         }
 
-        public async Task<List<Despesa>> GetAsync() =>
-        await _despesaCollection.Find(x => true).ToListAsync();
-
+        public async Task<List<Despesa>> GetAsync()
+        {
+            return await _despesaCollection.Find(x => true)
+                .SortByDescending(x => x.Data)
+                .ToListAsync();
+        }
         public async Task<Despesa?> GetAsync(string id) =>
             await _despesaCollection.Find(y => y.Id == id).FirstOrDefaultAsync();
 
-        public async Task CreateAsync(Despesa newDespesa) =>
-        await _despesaCollection.InsertOneAsync(newDespesa);
+        public async Task CreateAsync(Despesa newDespesa, DateTime data)
+        {
+            newDespesa.Data = data;
+            await _despesaCollection.InsertOneAsync(newDespesa);
+        }
 
         public async Task UpdateAsync(string id, Despesa updatedDespesa) =>
         await _despesaCollection.ReplaceOneAsync(x => x.Id == id, updatedDespesa);
@@ -43,6 +49,7 @@ namespace Finance.Services
 
             return somaDespesas;
         }
+
     }
 }
 

@@ -11,5 +11,6 @@ namespace Finance.Models
         [BsonElement("Nome")]
         public string Nome { get; set; }
         public decimal Valor { get; set; }
+        public DateTime Data { get; set; }
     }
 }
