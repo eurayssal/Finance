@@ -6,8 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.Configure<DespesaDatabaseSettings>(
     builder.Configuration.GetSection("DespesaDatabase"));
+builder.Services.Configure<ReceitaDatabaseSettings>(
+    builder.Configuration.GetSection("ReceitaDatabase"));
 
 builder.Services.AddSingleton<DespesaService>();
+builder.Services.AddSingleton<ReceitaService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

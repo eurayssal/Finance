@@ -1,6 +1,9 @@
 using Finance.Models;
 using Finance.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Xml.Schema;
 
 namespace Finance.Controllers
 {
@@ -47,7 +50,7 @@ namespace Finance.Controllers
                 return NotFound();
             }
 
-            despesa.DespesaNome = updatedDespesa.DespesaNome;
+            despesa.Nome = updatedDespesa.Nome;
             despesa.Valor = updatedDespesa.Valor;
 
             await _despesaService.UpdateAsync(id, despesa);
@@ -55,8 +58,8 @@ namespace Finance.Controllers
             return Ok(new
             {
                 despesa.Id,
-                despesa.DespesaNome,
-                despesa.Valor
+                despesa.Nome,
+                despesa.Valor,
             });
         }
 
@@ -74,5 +77,21 @@ namespace Finance.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("soma")]
+        public async Task<IActionResult> GetSomaDespesas(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var somaDespesas = await _despesaService.SomaDespesaAsync(cancellationToken);
+
+                return Ok(new { SomaDespesas = somaDespesas });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro ao calcular a soma das despesas: {ex.Message}");
+            }
+        }
+
     }
 }

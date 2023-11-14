@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Finance.Models
 {
-    public class Despesa
+    public class Receita
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

@@ -1,117 +1,44 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import hookApi from '../../hooks/api';
-import { IDespesa } from './model';
 
 const LandingPageView = () => {
-    const [despesas, setDespesas] = useState<Array<IDespesa>>([]);
-    const [novaDespesa, setNovaDespesa] = useState({ despesaNome: '', valor: '' });
-    const [editandoDespesa, setEditandoDespesa] =  useState<IDespesa | null>(null);
-
     const api = hookApi();
+    const [somaDespesas, setSomaDespesas] = useState<number>(0);
+    const [somaReceitas, setSomaReceitas] = useState<number>(0);
+    const [saldo, setSaldo] = useState<number>(0);
 
-    const getDespesas = async () => {
+    const getSaldo =async () => {
         try {
-            const response = await api.get<Array<IDespesa>>('api/despesa');
-            setDespesas(response.data);
+            const response = await api.get('api/landingpage/saldo');
+            setSomaDespesas(response.data.somaDespesas);
+            setSomaReceitas(response.data.somaReceitas);
+            setSaldo(response.data.saldo);
         } catch (error) {
-            console.log('Erro ao obter despesas: ', error);
+            console.error('Erro ao obter as informações de saldo: ', error);
         }
-    };
-
-    const postDespesa = async () => {
-        try {
-            await api.post('api/despesa', novaDespesa);
-            setNovaDespesa({ despesaNome: '', valor: '' });
-            getDespesas();
-        } catch (error) {
-            console.log('Erro ao adicionar despesa: ', error);
-        }
-    };
-
-    const editarDespesa = async () => {
-        try {
-            if (editandoDespesa && editandoDespesa.id) {
-                const response = await api.put<IDespesa>(`api/despesa/${editandoDespesa.id}`, novaDespesa);
-                
-                setDespesas((prev) => {
-                    const props = prev.filter(w => w.id !== response.data.id);
-                    return [...props, response.data]
-                });
-
-                setEditandoDespesa(null);
-                setNovaDespesa({ despesaNome: '', valor: '' });
-                getDespesas();
-            }
-        } catch (error) {
-            console.log('Erro ao editar despesa: ', error);
-        }
-    };
-    
-    const cancelarEdicao = () => {
-        setEditandoDespesa(null);
-        setNovaDespesa({ despesaNome: '', valor: '' });
-    };
-
-    const excluirDespesa = async (despesa: any) => {
-        try {
-            await api.delete(`api/despesa/${despesa.id}`);
-            getDespesas();
-        } catch (error) {
-            console.log('Erro ao excluir despesa: ', error);
-        }
-    };
+    }
 
     useEffect(() => {
-        getDespesas();
-    }, []);
+        getSaldo()
+    }, [])
+
+    const navigate = useNavigate();
+    const toLancamentoDespesas = () => navigate('/lancamento-despesas')
+    const toLancamentoReceitas = () => navigate('/lancamento-receitas')
 
     return (
         <div>
             <h2>LandingPageView</h2>
-            <h3>Despesas</h3>
-            <ul>
-                {despesas.map((despesa) => (
-                    <li key={despesa.id}>
-                        {despesa.despesaNome} - R$ {despesa.valor}
-                        <button onClick={() => setEditandoDespesa(despesa)}>Editar</button>
-                        <button onClick={() => excluirDespesa(despesa)}>Excluir</button>
-                    </li>
-                ))}
-            </ul>
+            <button onClick={toLancamentoDespesas}>Lançamento de despesas</button>
+            <button onClick={toLancamentoReceitas}>Lançamento de receitas</button>
 
-            <h3>{editandoDespesa ? 'Editar Despesa' : 'Adicionar Nova Despesa'}</h3>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    if (editandoDespesa) {
-                        editarDespesa();
-                    } else {
-                        postDespesa();
-                    }
-                }}
-            >
-                <label>
-                    Nome:
-                    <input
-                        type="text"
-                        value={novaDespesa.despesaNome}
-                        onChange={(e) => setNovaDespesa({ ...novaDespesa, despesaNome: e.target.value })}
-                    />
-                </label>
-                <label>
-                    Valor:
-                    <input
-                        type="text"
-                        value={novaDespesa.valor}
-                        onChange={(e) => {
-                            const valorAtualizado = e.target.value.replace(/./g, ',');
-                            setNovaDespesa({ ...novaDespesa, valor: valorAtualizado })}
-                        }
-                    />
-                </label>
-                <button type="submit">{editandoDespesa ? 'Editar Despesa' : 'Adicionar Despesa'}</button>
-                {editandoDespesa && <button type="button" onClick={cancelarEdicao}>Cancelar Edição</button>}
-            </form>
+            <div>
+                <h3>Soma de despesas: R$ {somaDespesas}</h3>
+                <h3>Soma de receitas: R$ {somaReceitas}</h3>
+                <h3>Saldo disponível: R$ {saldo}</h3>
+            </div>
         </div>
     );
 };

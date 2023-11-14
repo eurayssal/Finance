@@ -1,5 +1,5 @@
 export interface IDespesa {
     id: string;
-    despesaNome: string;
+    nome: string;
     valor: number;
 }

@@ -1,4 +1,4 @@
-﻿using Finance.Models;
+using Finance.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -34,6 +34,15 @@ namespace Finance.Services
 
         public async Task RemoveAsync(string id) =>
             await _despesaCollection.DeleteOneAsync(x => x.Id == id);
+
+        public async Task<decimal> SomaDespesaAsync(CancellationToken cancellationToken)
+        {
+            var despesas = await _despesaCollection.Find(x => true).ToListAsync(cancellationToken);
+
+            decimal somaDespesas = despesas.Sum(s => s.Valor);
+
+            return somaDespesas;
+        }
     }
 }
 
