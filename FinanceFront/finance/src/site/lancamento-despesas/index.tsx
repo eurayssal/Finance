@@ -35,11 +35,19 @@ const LancamentoDespesasView = () => {
     const editarDespesa = async () => {
         try {
             if (editandoDespesa && editandoDespesa.id) {
-                const response = await api.put<IDespesa>(`api/despesa/${editandoDespesa.id}`, novaDespesa);
+                const response = await api.put<IDespesa>(
+                    `api/despesa/${editandoDespesa.id}`,
+                    {
+                        nome: novaDespesa.nome,
+                        valor: parseFloat(novaDespesa.valor),
+                        // Ajuste para formatar a data corretamente
+                        data: novaDespesa.data ? new Date(novaDespesa.data) : null,
+                    }
+                );
 
                 setDespesas((prev) => {
-                    const props = prev.filter(w => w.id !== response.data.id);
-                    return [...props, response.data]
+                    const props = prev.filter((w) => w.id !== response.data.id);
+                    return [...props, response.data];
                 });
 
                 setEditandoDespesa(null);
@@ -77,7 +85,7 @@ const LancamentoDespesasView = () => {
     const getFormattedDate = (isoDate: string | number | Date) => {
         const date = new Date(isoDate);
         const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Mês começa do 0
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const year = date.getFullYear();
 
         return `${day}/${month}/${year}`;
@@ -86,6 +94,18 @@ const LancamentoDespesasView = () => {
     useEffect(() => {
         getDespesas();
     }, []);
+
+    useEffect(() => {
+        if (editandoDespesa) {
+            setNovaDespesa({
+                nome: editandoDespesa.nome || '',
+                valor: editandoDespesa.valor ? editandoDespesa.valor.toString() : '',
+                data: editandoDespesa.data
+                    ? new Date(editandoDespesa.data).toISOString().split('T')[0]
+                    : '',
+            });
+        }
+    }, [editandoDespesa]);
 
     useEffect(() => {
         if (despesas.length) { getSomaDespesas() }
