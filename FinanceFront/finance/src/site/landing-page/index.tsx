@@ -27,12 +27,14 @@ const LandingPageView = () => {
     const navigate = useNavigate();
     const toLancamentoDespesas = () => navigate('/lancamento-despesas')
     const toLancamentoReceitas = () => navigate('/lancamento-receitas')
+    const toCadContas = () => navigate('/cadastro-contas')
 
     return (
         <div>
             <h2>LandingPageView</h2>
             <button onClick={toLancamentoDespesas}>Lançamento de despesas</button>
             <button onClick={toLancamentoReceitas}>Lançamento de receitas</button>
+            <button onClick={toCadContas}>Lançamento de receitas</button>
 
             <div>
                 <h3>Soma de despesas: R$ {somaDespesas}</h3>

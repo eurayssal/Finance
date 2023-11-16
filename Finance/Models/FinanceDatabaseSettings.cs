@@ -1,9 +1,8 @@
 namespace Finance.Models
 {
-    public class ReceitaDatabaseSettings
+    public class FinanceDatabaseSettings
     {
         public string ConnectionString { get; set; } = null;
         public string DatabaseName { get; set; } = null;
-        public string ReceitaCollectionName { get; set; } = null;
     }
 }

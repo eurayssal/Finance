@@ -4,13 +4,13 @@ using Finance.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.Configure<DespesaDatabaseSettings>(
-    builder.Configuration.GetSection("DespesaDatabase"));
-builder.Services.Configure<ReceitaDatabaseSettings>(
-    builder.Configuration.GetSection("ReceitaDatabase"));
+builder.Services.Configure<FinanceDatabaseSettings>(
+    builder.Configuration.GetSection("FinanceDatabase"));
 
+builder.Services.AddSingleton<FinanceDatabaseSettings>();
 builder.Services.AddSingleton<DespesaService>();
 builder.Services.AddSingleton<ReceitaService>();
+builder.Services.AddSingleton<CadContaService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

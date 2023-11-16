@@ -1,9 +1,11 @@
 using Finance.Models;
 using Finance.Services;
+using Finance.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography.X509Certificates;
+using System;
+using System.Collections.Generic;
 using System.Threading;
-using System.Xml.Schema;
+using System.Threading.Tasks;
 
 namespace Finance.Controllers
 {
@@ -12,16 +14,20 @@ namespace Finance.Controllers
     public class DespesaController : ControllerBase
     {
         private readonly DespesaService _despesaService;
+        private readonly CadContaService _cadContaService;
 
-        public DespesaController(DespesaService despesaService) =>
+        public DespesaController(DespesaService despesaService, CadContaService cadContaService)
+        {
             _despesaService = despesaService;
+            _cadContaService = cadContaService;
+        }
 
         [HttpGet]
-        public async Task<List<Despesa>> Get() =>
-            await _despesaService.GetAsync();
+        public async Task<ActionResult<List<Despesa>>> GetDespesas() =>
+            Ok(await _despesaService.GetAsync());
 
         [HttpGet("{id:length(24)}")]
-        public async Task<ActionResult<Despesa>> Get(string id)
+        public async Task<ActionResult<Despesa>> GetDespesa(string id)
         {
             var despesa = await _despesaService.GetAsync(id);
 
@@ -29,19 +35,19 @@ namespace Finance.Controllers
             {
                 return NotFound();
             }
+
             return despesa;
         }
-
         [HttpPost]
-        public async Task<IActionResult> Post(Despesa newDespesa)
+        public async Task<IActionResult> Post(DespesaViewModel newDespesa)
         {
-            await _despesaService.CreateAsync(newDespesa, newDespesa.Data);
-
-            return CreatedAtAction(nameof(Get), new { id = newDespesa.Id }, newDespesa);
+            var conta = await _cadContaService.GetAsync(newDespesa.ContaId);
+            await _despesaService.CreateAsync(newDespesa, conta);
+            return Ok();
         }
 
         [HttpPut("{id:length(24)}")]
-        public async Task<IActionResult> Update(string id, Despesa updatedDespesa)
+        public async Task<IActionResult> Update(string id, Despesa updatedDespesa, string contaId)
         {
             var despesa = await _despesaService.GetAsync(id);
 
@@ -50,21 +56,19 @@ namespace Finance.Controllers
                 return NotFound();
             }
 
-            despesa.Nome = updatedDespesa.Nome;
-            despesa.Valor = updatedDespesa.Valor;
-
-            await _despesaService.UpdateAsync(id, despesa);
+            updatedDespesa.ContaId = contaId;
+            await _despesaService.UpdateAsync(id, updatedDespesa, contaId);
 
             return Ok(new
             {
-                despesa.Id,
-                despesa.Nome,
-                despesa.Valor,
+                updatedDespesa.Id,
+                updatedDespesa.Nome,
+                updatedDespesa.Valor,
             });
         }
 
         [HttpDelete("{id:length(24)}")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> DeleteDespesa(string id)
         {
             var despesa = await _despesaService.GetAsync(id);
 
@@ -92,6 +96,5 @@ namespace Finance.Controllers
                 return StatusCode(500, $"Erro ao calcular a soma das despesas: {ex.Message}");
             }
         }
-
     }
 }

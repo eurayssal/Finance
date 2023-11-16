@@ -3,4 +3,6 @@ export interface IDespesa {
     nome: string;
     valor: number;
     data: string;
+    contaId: string
+    contaName: string
 }

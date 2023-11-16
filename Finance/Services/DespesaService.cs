@@ -1,4 +1,5 @@
 using Finance.Models;
+using Finance.ViewModels;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -8,16 +9,15 @@ namespace Finance.Services
     {
         private readonly IMongoCollection<Despesa> _despesaCollection;
 
-        public DespesaService(IOptions<DespesaDatabaseSettings> despesaDatabaseSettings)
+        public DespesaService(IOptions<FinanceDatabaseSettings> financeDatabaseSettings)
         {
             var mongoClient = new MongoClient(
-                despesaDatabaseSettings.Value.ConnectionString);
+                financeDatabaseSettings.Value.ConnectionString);
 
             var mongoDatabase = mongoClient.GetDatabase(
-                despesaDatabaseSettings.Value.DatabaseName);
+                financeDatabaseSettings.Value.DatabaseName);
 
-            _despesaCollection = mongoDatabase.GetCollection<Despesa>(
-                despesaDatabaseSettings.Value.DespesaCollectionName);
+            _despesaCollection = mongoDatabase.GetCollection<Despesa>("despesa");
         }
 
         public async Task<List<Despesa>> GetAsync()
@@ -29,14 +29,22 @@ namespace Finance.Services
         public async Task<Despesa?> GetAsync(string id) =>
             await _despesaCollection.Find(y => y.Id == id).FirstOrDefaultAsync();
 
-        public async Task CreateAsync(Despesa newDespesa, DateTime data)
+        public async Task CreateAsync(DespesaViewModel newDespesa, CadConta cadConta)
         {
-            newDespesa.Data = data;
-            await _despesaCollection.InsertOneAsync(newDespesa);
+            var despesa = new Despesa();
+            despesa.Nome = newDespesa.Nome;
+            despesa.Data = newDespesa.Data;
+            despesa.Valor = newDespesa.Valor;
+            despesa.ContaId = cadConta.Id;
+            despesa.ContaName = cadConta.Nome;
+            await _despesaCollection.InsertOneAsync(despesa);
         }
 
-        public async Task UpdateAsync(string id, Despesa updatedDespesa) =>
-        await _despesaCollection.ReplaceOneAsync(x => x.Id == id, updatedDespesa);
+        public async Task UpdateAsync(string id, Despesa updatedDespesa, string contaId)
+        {
+            updatedDespesa.ContaId = contaId;
+            await _despesaCollection.ReplaceOneAsync(x => x.Id == id, updatedDespesa);
+        }
 
         public async Task RemoveAsync(string id) =>
             await _despesaCollection.DeleteOneAsync(x => x.Id == id);

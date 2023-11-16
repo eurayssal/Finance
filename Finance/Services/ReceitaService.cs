@@ -8,16 +8,15 @@ namespace Finance.Services
     {
         private readonly IMongoCollection<Receita> _receitaCollection;
 
-        public ReceitaService(IOptions<ReceitaDatabaseSettings> receitaDatabaseSettings)
+        public ReceitaService(IOptions<FinanceDatabaseSettings> financeDatabaseSettings)
         {
             var mongoClient = new MongoClient(
-                receitaDatabaseSettings.Value.ConnectionString);
+                financeDatabaseSettings.Value.ConnectionString);
 
             var mongoDataBase = mongoClient.GetDatabase(
-                receitaDatabaseSettings.Value.ReceitaCollectionName);
+                financeDatabaseSettings.Value.DatabaseName);
 
-            _receitaCollection = mongoDataBase.GetCollection<Receita>(
-                receitaDatabaseSettings.Value.ReceitaCollectionName);
+            _receitaCollection = mongoDataBase.GetCollection<Receita>("receita");
         }
 
         public async Task<List<Receita>> GetAsync() =>

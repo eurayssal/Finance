@@ -5,27 +5,31 @@ import hookApi from '../../hooks/api';
 import { useNavigate } from 'react-router-dom';
 
 const LancamentoDespesasView = () => {
+    const [contas, setContas] = useState([]);
     const [despesas, setDespesas] = useState<Array<IDespesa>>([]);
-    const [novaDespesa, setNovaDespesa] = useState({ nome: '', valor: '', data: '' });
+    const [novaDespesa, setNovaDespesa] = useState({ nome: '', valor: '', data: '', contaId: '' });
     const [editandoDespesa, setEditandoDespesa] = useState<IDespesa | null>(null);
     const [somaDespesas, setSomaDespesas] = useState<number>(0);
 
     const api = hookApi();
-
+    
     const getDespesas = async () => {
         try {
-            const response = await api.get<Array<IDespesa>>('api/despesa');
-            const despesasOrdenadas = response.data.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
-            setDespesas(despesasOrdenadas);
+            const response = await api.get('/api/despesa');
+            const despesa = response.data.map(async (despesa: any) => {
+                return { ...despesa };
+            });
+            const despesasComContasResolved = await Promise.all(despesa);
+            setDespesas(despesasComContasResolved);
         } catch (error) {
-            console.log('Erro ao obter despesas: ', error);
+            console.error('Erro ao obter despesas: ', error);
         }
     };
 
     const postDespesa = async () => {
         try {
             await api.post('api/despesa', novaDespesa);
-            setNovaDespesa({ nome: '', valor: '', data: '' });
+            setNovaDespesa({ nome: '', valor: '', data: '', contaId: '' });
             getDespesas();
         } catch (error) {
             console.log('Erro ao adicionar despesa: ', error);
@@ -40,7 +44,6 @@ const LancamentoDespesasView = () => {
                     {
                         nome: novaDespesa.nome,
                         valor: parseFloat(novaDespesa.valor),
-                        // Ajuste para formatar a data corretamente
                         data: novaDespesa.data ? new Date(novaDespesa.data) : null,
                     }
                 );
@@ -51,7 +54,7 @@ const LancamentoDespesasView = () => {
                 });
 
                 setEditandoDespesa(null);
-                setNovaDespesa({ nome: '', valor: '', data: '' });
+                setNovaDespesa({ nome: '', valor: '', data: '', contaId: '' });
                 getDespesas();
             }
         } catch (error) {
@@ -61,7 +64,7 @@ const LancamentoDespesasView = () => {
 
     const cancelarEdicao = () => {
         setEditandoDespesa(null);
-        setNovaDespesa({ nome: '', valor: '', data: '' });
+        setNovaDespesa({ nome: '', valor: '', data: '', contaId: '' });
     };
 
     const excluirDespesa = async (despesa: any) => {
@@ -91,8 +94,18 @@ const LancamentoDespesasView = () => {
         return `${day}/${month}/${year}`;
     };
 
+    const getContas = async () => {
+        try {
+            const response = await api.get('/api/cadconta');
+            setContas(response.data);
+        } catch (error) {
+            console.error('Erro ao obter contas: ', error);
+        }
+    };
+
     useEffect(() => {
         getDespesas();
+        getContas();
     }, []);
 
     useEffect(() => {
@@ -103,9 +116,11 @@ const LancamentoDespesasView = () => {
                 data: editandoDespesa.data
                     ? new Date(editandoDespesa.data).toISOString().split('T')[0]
                     : '',
+                contaId: editandoDespesa.contaId || '',
             });
         }
     }, [editandoDespesa]);
+    
 
     useEffect(() => {
         if (despesas.length) { getSomaDespesas() }
@@ -126,7 +141,7 @@ const LancamentoDespesasView = () => {
             <ul>
                 {despesas.map((despesa) => (
                     <li key={despesa.id}>
-                        {despesa.nome} - R$ {despesa.valor} - Data: {getFormattedDate(despesa.data)}
+                        {despesa.nome} - R$ {despesa.valor} - Data: {getFormattedDate(despesa.data)} - Conta: {despesa.contaName}
                         <button onClick={() => setEditandoDespesa(despesa)}>Editar</button>
                         <button onClick={() => excluirDespesa(despesa)}>Excluir</button>
                     </li>
@@ -168,6 +183,20 @@ const LancamentoDespesasView = () => {
                         value={novaDespesa.data}
                         onChange={(e) => setNovaDespesa({ ...novaDespesa, data: e.target.value })}
                     />
+                </label>
+                <label>
+                    Conta:
+                    <select
+                        value={novaDespesa.contaId}
+                        onChange={(e) => setNovaDespesa({ ...novaDespesa, contaId: e.target.value })}
+                    >
+                        <option value="">Selecione uma conta</option>
+                        {contas.map((conta: any) => (
+                            <option key={conta.id} value={conta.id}>
+                                {conta.nome}
+                            </option>
+                        ))}
+                    </select>
                 </label>
                 <button type="submit">{editandoDespesa ? 'Editar Despesa' : 'Adicionar Despesa'}</button>
                 {editandoDespesa && <button type="button" onClick={cancelarEdicao}>Cancelar Edição</button>}
