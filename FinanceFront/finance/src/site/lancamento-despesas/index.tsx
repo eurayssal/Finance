@@ -28,6 +28,8 @@ const LancamentoDespesasView = () => {
 
     const postDespesa = async () => {
         try {
+            console.log('novaDespesa', novaDespesa);
+
             await api.post('api/despesa', novaDespesa);
             setNovaDespesa({ nome: '', valor: '', data: '', contaId: '' });
             getDespesas();
@@ -45,6 +47,7 @@ const LancamentoDespesasView = () => {
                         nome: novaDespesa.nome,
                         valor: parseFloat(novaDespesa.valor),
                         data: novaDespesa.data ? new Date(novaDespesa.data) : null,
+                        contaId: novaDespesa.contaId                  
                     }
                 );
 

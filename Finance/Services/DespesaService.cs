@@ -40,10 +40,17 @@ namespace Finance.Services
             await _despesaCollection.InsertOneAsync(despesa);
         }
 
-        public async Task UpdateAsync(string id, Despesa updatedDespesa, string contaId)
+        public async Task UpdateAsync(string id, DespesaViewModel despesaViewModel, CadConta cadConta)
         {
-            updatedDespesa.ContaId = contaId;
-            await _despesaCollection.ReplaceOneAsync(x => x.Id == id, updatedDespesa);
+            var despesa = await GetAsync(id);
+
+            despesa.Nome = despesaViewModel.Nome;
+            despesa.Valor = despesaViewModel.Valor;
+            despesa.Data = despesaViewModel.Data;
+            despesa.ContaId = despesaViewModel.ContaId;
+            despesa.ContaName = cadConta.Nome;
+
+            await _despesaCollection.ReplaceOneAsync(x => x.Id == id, despesa);
         }
 
         public async Task RemoveAsync(string id) =>

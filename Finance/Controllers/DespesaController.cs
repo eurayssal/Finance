@@ -4,6 +4,7 @@ using Finance.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,18 +24,25 @@ namespace Finance.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Despesa>>> GetDespesas() =>
-            Ok(await _despesaService.GetAsync());
+        public async Task<ActionResult<List<Despesa>>> GetDespesas()
+        {
+            List<Despesa> despesas = await _despesaService.GetAsync();
+
+            return Ok(despesas.Select(s => new
+            {
+                s.Id,
+                s.Nome,
+                s.ContaId,
+                s.ContaName,
+                Valor = s.Valor.ToString("C", new CultureInfo("pt-BR")),
+                s.Data,
+            }).ToList());
+        }
 
         [HttpGet("{id:length(24)}")]
         public async Task<ActionResult<Despesa>> GetDespesa(string id)
         {
             var despesa = await _despesaService.GetAsync(id);
-
-            if (despesa == null)
-            {
-                return NotFound();
-            }
 
             return despesa;
         }
@@ -47,35 +55,18 @@ namespace Finance.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
-        public async Task<IActionResult> Update(string id, Despesa updatedDespesa, string contaId)
+        public async Task<IActionResult> Update(string id, DespesaViewModel despesaViewModel)
         {
-            var despesa = await _despesaService.GetAsync(id);
+            var conta = await _cadContaService.GetAsync(despesaViewModel.ContaId);
+            await _despesaService.UpdateAsync(id, despesaViewModel, conta);
 
-            if (despesa is null)
-            {
-                return NotFound();
-            }
-
-            updatedDespesa.ContaId = contaId;
-            await _despesaService.UpdateAsync(id, updatedDespesa, contaId);
-
-            return Ok(new
-            {
-                updatedDespesa.Id,
-                updatedDespesa.Nome,
-                updatedDespesa.Valor,
-            });
+            return Ok();
         }
 
         [HttpDelete("{id:length(24)}")]
         public async Task<IActionResult> DeleteDespesa(string id)
         {
             var despesa = await _despesaService.GetAsync(id);
-
-            if (despesa == null)
-            {
-                return NotFound();
-            }
 
             await _despesaService.RemoveAsync(id);
 
