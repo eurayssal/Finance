@@ -21,7 +21,7 @@ const CadContasView = () => {
     const postConta = async () => {
         try {
             await api.post('/api/cadconta', novaConta);
-            setNovaConta({ nome: '', saldo: '', atividade: true  });
+            setNovaConta({ nome: '', saldo: '', atividade: true });
             getContas();
         } catch (error) {
             console.error('Erro ao adicionar conta: ', error);
@@ -30,7 +30,7 @@ const CadContasView = () => {
 
     const editarConta = async () => {
         try {
-            if(editandoConta && editandoConta.id){
+            if (editandoConta && editandoConta.id) {
                 const response = await api.put<ICadConta>(
                     `api/despesa/${editandoConta.id}`,
                     {
@@ -67,13 +67,14 @@ const CadContasView = () => {
         getContas();
     }, []);
 
+
     return (
         <div>
             <h2>Cadastro de Contas</h2>
             <ul>
                 {contas.map((conta: any) => (
                     <li key={conta.id}>
-                        {conta.nome} - Saldo: R$ {conta.saldo} - Status: {conta.atividade}
+                        {conta.nome} - Saldo: R$ {conta.saldo} - Status: {conta.atividade ? 'Ativa' : 'Inativa'}
                         <button onClick={() => excluirConta(conta)}>Excluir</button>
                     </li>
                 ))}
@@ -107,14 +108,14 @@ const CadContasView = () => {
                     />
                 </label>
                 <label>
-        Status:
-        <select 
-            value={novaConta.atividade.toString()}
-            onChange={(e) => setNovaConta({ ...novaConta, atividade: e.target.value === 'true' })}>
-            <option value='true'>Ativo</option>
-            <option value='false'>Inativo</option>
-        </select>
-    </label>
+                    Status:
+                    <select
+                        value={novaConta.atividade.toString()}
+                        onChange={(e) => setNovaConta({ ...novaConta, atividade: e.target.value === 'true' })}>
+                        <option value='true'>Ativo</option>
+                        <option value='false'>Inativo</option>
+                    </select>
+                </label>
                 <button type="submit">{editandoConta ? 'Editar Conta' : 'Adicionar Conta'}</button>
             </form>
         </div>

@@ -7,22 +7,21 @@ import ButtonUi from '../../components/core/buttons/buttons';
 import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 
 const LancamentoDespesasView = () => {
+    const api = hookApi();
+
     const [contas, setContas] = useState([]);
     const [despesas, setDespesas] = useState<Array<IDespesa>>([]);
-    const [novaDespesa, setNovaDespesa] = useState({ nome: '', valor: '', data: '', contaId: '' });
+    const [novaDespesa, setNovaDespesa] = useState({ nome: '', valor: '', data: '', contaId: '',status: true });
     const [editandoDespesa, setEditandoDespesa] = useState<IDespesa | null>(null);
     const [somaDespesas, setSomaDespesas] = useState<number>(0);
-
-    const api = hookApi();
 
     const getDespesas = async () => {
         try {
             const response = await api.get('/api/despesa');
-            const despesa = response.data.map(async (despesa: any) => {
+            const despesa = response.data.map((despesa: any) => {
                 return { ...despesa };
             });
-            const despesasComContasResolved = await Promise.all(despesa);
-            setDespesas(despesasComContasResolved);
+            setDespesas(despesa);
         } catch (error) {
             console.error('Erro ao obter despesas: ', error);
         }
@@ -33,7 +32,7 @@ const LancamentoDespesasView = () => {
             console.log('novaDespesa', novaDespesa);
 
             await api.post('api/despesa', novaDespesa);
-            setNovaDespesa({ nome: '', valor: '', data: '', contaId: '' });
+            setNovaDespesa({ nome: '', valor: '', data: '', contaId: '', status: true });
             getDespesas();
         } catch (error) {
             console.log('Erro ao adicionar despesa: ', error);
@@ -59,7 +58,7 @@ const LancamentoDespesasView = () => {
                 });
 
                 setEditandoDespesa(null);
-                setNovaDespesa({ nome: '', valor: '', data: '', contaId: '' });
+                setNovaDespesa({ nome: '', valor: '', data: '', contaId: '',status: true });
                 getDespesas();
             }
         } catch (error) {
@@ -69,7 +68,7 @@ const LancamentoDespesasView = () => {
 
     const cancelarEdicao = () => {
         setEditandoDespesa(null);
-        setNovaDespesa({ nome: '', valor: '', data: '', contaId: '' });
+        setNovaDespesa({ nome: '', valor: '', data: '', contaId: '', status: true});
     };
 
     const excluirDespesa = async (despesa: any) => {
@@ -89,10 +88,6 @@ const LancamentoDespesasView = () => {
             console.log('Erro: ', error)
         }
     }
-
-    useEffect(() => {
-        getSomaDespesas()
-    }, [])
 
     const getFormattedDate = (isoDate: string | number | Date) => {
         const date = new Date(isoDate);
@@ -114,6 +109,7 @@ const LancamentoDespesasView = () => {
 
     useEffect(() => {
         getDespesas();
+        getSomaDespesas();
         getContas();
     }, []);
 
@@ -126,14 +122,13 @@ const LancamentoDespesasView = () => {
                     ? new Date(editandoDespesa.data).toISOString().split('T')[0]
                     : '',
                 contaId: editandoDespesa.contaId || '',
+                status: editandoDespesa.status
             });
         }
     }, [editandoDespesa]);
 
-
     useEffect(() => {
         if (despesas.length) { getSomaDespesas() }
-
     }, [despesas])
 
     const navigate = useNavigate();
@@ -141,8 +136,6 @@ const LancamentoDespesasView = () => {
     const toLancamentoReceitas = () => navigate('/lancamento-receitas')
     const toCadContas = () => navigate('/cadastro-contas')
 
-
-    console.log('somaDespesas', somaDespesas)
     return (
         <DisplayFlexUi flexDirection='column'>
             <h2>Lançamento de despesas</h2>
@@ -163,45 +156,45 @@ const LancamentoDespesasView = () => {
                         } else {
                             postDespesa();
                         }
-                    }}
-                >
+                    }}>
                     <DisplayFlexUi flexDirection='column' gap={16}>
-                        <label>
-                            Nome:
+                        <label>Nome:
                             <input
                                 type="text"
                                 value={novaDespesa.nome}
-                                onChange={(e) => setNovaDespesa({ ...novaDespesa, nome: e.target.value })}
-                            />
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, nome: e.target.value })}/>
                         </label>
-                        <label>
-                            Valor:
+                        <label>Valor:
                             <input
                                 type="text"
                                 value={novaDespesa.valor}
-                                onChange={(e) => setNovaDespesa({ ...novaDespesa, valor: e.target.value })}
-                            />
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, valor: e.target.value })}/>
                         </label>
-                        <label>
-                            Data:
+                        <label>Data:
                             <input
                                 type="date"
                                 value={novaDespesa.data}
-                                onChange={(e) => setNovaDespesa({ ...novaDespesa, data: e.target.value })}
-                            />
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, data: e.target.value })}/>
                         </label>
-                        <label>
-                            Conta:
+                        <label>Conta:
                             <select
                                 value={novaDespesa.contaId}
-                                onChange={(e) => setNovaDespesa({ ...novaDespesa, contaId: e.target.value })}
-                            >
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, contaId: e.target.value })}>
                                 <option value="">Selecione uma conta</option>
                                 {contas.map((conta: any) => (
                                         <option key={conta.id} value={conta.id}>
                                             {conta.nome}
                                         </option>
                                 ))}
+                            </select>
+                        </label>
+
+                        <label>Status:
+                            <select 
+                            value={novaDespesa.status.toString()}
+                            onChange={(e) => setNovaDespesa({...novaDespesa, status: e.target.value === 'true'})}>
+                                <option value='true'>Ativo</option>
+                                <option value='false'>Inativo</option>
                             </select>
                         </label>
                         <DisplayFlexUi>
@@ -218,7 +211,10 @@ const LancamentoDespesasView = () => {
                 <ul>
                     {despesas.map((despesa) => (
                         <li key={despesa.id}>
-                            {despesa.nome} - R$ {despesa.valor} - Data: {getFormattedDate(despesa.data)} - Conta: {despesa.contaName}
+                            {despesa.nome} - R$ {despesa.valor} 
+                            - Data: {getFormattedDate(despesa.data)} 
+                            - Conta: {despesa.contaName} 
+                            - Status: {despesa.status ? 'Paga' : 'Não paga'}
                             <ButtonUi onClick={() => setEditandoDespesa(despesa)}>Editar</ButtonUi>
                             <ButtonUi onClick={() => excluirDespesa(despesa)}>Excluir</ButtonUi>
                         </li>

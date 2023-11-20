@@ -16,7 +16,6 @@ namespace Finance.Controllers
     {
         private readonly DespesaService _despesaService;
         private readonly CadContaService _cadContaService;
-        private readonly CadCartaoService _cadCartaoService;
 
         public DespesaController(DespesaService despesaService, CadContaService cadContaService)
         {
@@ -35,6 +34,7 @@ namespace Finance.Controllers
                 s.Nome,
                 s.ContaId,
                 s.ContaName,
+                s.Status,
                 Valor = s.Valor.ToString("C", new CultureInfo("pt-BR")),
                 s.Data,
             }).ToList());
@@ -51,8 +51,7 @@ namespace Finance.Controllers
         public async Task<IActionResult> Post(DespesaViewModel newDespesa)
         {
             var conta = await _cadContaService.GetAsync(newDespesa.ContaId);
-            var cartao = await _cadCartaoService.GetAsync(newDespesa.CartaoId);
-            await _despesaService.CreateAsync(newDespesa, conta, cartao);
+            await _despesaService.CreateAsync(newDespesa, conta);
             return Ok();
         }
 
@@ -60,8 +59,7 @@ namespace Finance.Controllers
         public async Task<IActionResult> Update(string id, DespesaViewModel despesaViewModel)
         {
             var conta = await _cadContaService.GetAsync(despesaViewModel.ContaId);
-            var cartao = await _cadCartaoService.GetAsync(despesaViewModel.CartaoId);
-            await _despesaService.UpdateAsync(id, despesaViewModel, conta, cartao);
+            await _despesaService.UpdateAsync(id, despesaViewModel, conta);
 
             return Ok();
         }
