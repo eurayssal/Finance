@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import hookApi from '../../hooks/api';
+import ButtonUi from '../../components/core/buttons/buttons';
+import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 
 const LandingPageView = () => {
     const api = hookApi();
@@ -9,7 +11,7 @@ const LandingPageView = () => {
     const [somaReceitas, setSomaReceitas] = useState<number>(0);
     const [saldo, setSaldo] = useState<number>(0);
 
-    const getSaldo =async () => {
+    const getSaldo = async () => {
         try {
             const response = await api.get('api/landingpage/saldo');
             setSomaDespesas(response.data.somaDespesas);
@@ -32,9 +34,11 @@ const LandingPageView = () => {
     return (
         <div>
             <h2>LandingPageView</h2>
-            <button onClick={toLancamentoDespesas}>Lançamento de despesas</button>
-            <button onClick={toLancamentoReceitas}>Lançamento de receitas</button>
-            <button onClick={toCadContas}>Lançamento de receitas</button>
+            <DisplayFlexUi gap={8}>
+                <ButtonUi onClick={toLancamentoDespesas}>Lançamento de despesas</ButtonUi>
+                <ButtonUi onClick={toLancamentoReceitas}>Lançamento de receitas</ButtonUi>
+                <ButtonUi onClick={toCadContas}>Lançamento de receitas</ButtonUi>
+            </DisplayFlexUi>
 
             <div>
                 <h3>Soma de despesas: R$ {somaDespesas}</h3>

@@ -1,5 +1,6 @@
 using Finance.Models;
 using Microsoft.Extensions.Options;
+using Finance.Controllers;
 using MongoDB.Driver;
 
 namespace Finance.Services
@@ -8,7 +9,8 @@ namespace Finance.Services
     {
         private readonly IMongoCollection<CadConta> _cadContaCollection;
 
-        public CadContaService (IOptions<FinanceDatabaseSettings> financeDatabaseSettings)
+        public CadContaService (
+            IOptions<FinanceDatabaseSettings> financeDatabaseSettings)
         {
             var mongoClient = new MongoClient(
                 financeDatabaseSettings.Value.ConnectionString);

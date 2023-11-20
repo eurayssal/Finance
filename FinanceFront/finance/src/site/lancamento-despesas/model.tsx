@@ -3,6 +3,9 @@ export interface IDespesa {
     nome: string;
     valor: number;
     data: string;
+    status: boolean;
+    cartaoId: string;
+    cartaoName: string;
     contaId: string
     contaName: string
 }

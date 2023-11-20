@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { IDespesa } from './model';
 import hookApi from '../../hooks/api';
 import { useNavigate } from 'react-router-dom';
+import ButtonUi from '../../components/core/buttons/buttons';
+import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 
 const LancamentoDespesasView = () => {
     const [contas, setContas] = useState([]);
@@ -12,7 +14,7 @@ const LancamentoDespesasView = () => {
     const [somaDespesas, setSomaDespesas] = useState<number>(0);
 
     const api = hookApi();
-    
+
     const getDespesas = async () => {
         try {
             const response = await api.get('/api/despesa');
@@ -47,7 +49,7 @@ const LancamentoDespesasView = () => {
                         nome: novaDespesa.nome,
                         valor: parseFloat(novaDespesa.valor),
                         data: novaDespesa.data ? new Date(novaDespesa.data) : null,
-                        contaId: novaDespesa.contaId                  
+                        contaId: novaDespesa.contaId
                     }
                 );
 
@@ -88,6 +90,10 @@ const LancamentoDespesasView = () => {
         }
     }
 
+    useEffect(() => {
+        getSomaDespesas()
+    }, [])
+
     const getFormattedDate = (isoDate: string | number | Date) => {
         const date = new Date(isoDate);
         const day = date.getDate().toString().padStart(2, '0');
@@ -123,7 +129,7 @@ const LancamentoDespesasView = () => {
             });
         }
     }, [editandoDespesa]);
-    
+
 
     useEffect(() => {
         if (despesas.length) { getSomaDespesas() }
@@ -133,78 +139,94 @@ const LancamentoDespesasView = () => {
     const navigate = useNavigate();
     const toLandingPage = () => navigate('/landing-page')
     const toLancamentoReceitas = () => navigate('/lancamento-receitas')
+    const toCadContas = () => navigate('/cadastro-contas')
+
 
     console.log('somaDespesas', somaDespesas)
     return (
-        <div>
+        <DisplayFlexUi flexDirection='column'>
             <h2>Lançamento de despesas</h2>
-            <button onClick={toLandingPage}>Landing Page</button>
-            <button onClick={toLancamentoReceitas}>Lancamento de receitas</button>
-            <h3>Despesas</h3>
-            <ul>
-                {despesas.map((despesa) => (
-                    <li key={despesa.id}>
-                        {despesa.nome} - R$ {despesa.valor} - Data: {getFormattedDate(despesa.data)} - Conta: {despesa.contaName}
-                        <button onClick={() => setEditandoDespesa(despesa)}>Editar</button>
-                        <button onClick={() => excluirDespesa(despesa)}>Excluir</button>
-                    </li>
-                ))}
-            </ul>
-            <p>Soma despesas: R$ {somaDespesas}</p>
+            <DisplayFlexUi>
+                <ButtonUi onClick={toLandingPage}>Landing Page</ButtonUi>
+                <ButtonUi onClick={toLancamentoReceitas}>Lancamento de receitas</ButtonUi>
+                <ButtonUi onClick={toLancamentoReceitas}>Lancamento de receitas</ButtonUi>
+                <ButtonUi onClick={toCadContas}>Cadastro de contas</ButtonUi>
+            </DisplayFlexUi>
 
-            <h3>{editandoDespesa ? 'Editar Despesa' : 'Adicionar Nova Despesa'}</h3>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    if (editandoDespesa) {
-                        editarDespesa();
-                    } else {
-                        postDespesa();
-                    }
-                }}
-            >
-                <label>
-                    Nome:
-                    <input
-                        type="text"
-                        value={novaDespesa.nome}
-                        onChange={(e) => setNovaDespesa({ ...novaDespesa, nome: e.target.value })}
-                    />
-                </label>
-                <label>
-                    Valor:
-                    <input
-                        type="text"
-                        value={novaDespesa.valor}
-                        onChange={(e) => setNovaDespesa({ ...novaDespesa, valor: e.target.value })}
-                    />
-                </label>
-                <label>
-                    Data:
-                    <input
-                        type="date"
-                        value={novaDespesa.data}
-                        onChange={(e) => setNovaDespesa({ ...novaDespesa, data: e.target.value })}
-                    />
-                </label>
-                <label>
-                    Conta:
-                    <select
-                        value={novaDespesa.contaId}
-                        onChange={(e) => setNovaDespesa({ ...novaDespesa, contaId: e.target.value })}
-                    >
-                        <option value="">Selecione uma conta</option>
-                        {contas.map((conta: any) => (
-                            <option key={conta.id} value={conta.id}>
-                                {conta.nome}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-                <button type="submit">{editandoDespesa ? 'Editar Despesa' : 'Adicionar Despesa'}</button>
-                {editandoDespesa && <button type="button" onClick={cancelarEdicao}>Cancelar Edição</button>}
-            </form>
-        </div>
+            <DisplayFlexUi flexDirection='column'>
+                <h3>{editandoDespesa ? 'Editar Despesa' : 'Adicionar Nova Despesa'}</h3>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        if (editandoDespesa) {
+                            editarDespesa();
+                        } else {
+                            postDespesa();
+                        }
+                    }}
+                >
+                    <DisplayFlexUi flexDirection='column' gap={16}>
+                        <label>
+                            Nome:
+                            <input
+                                type="text"
+                                value={novaDespesa.nome}
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, nome: e.target.value })}
+                            />
+                        </label>
+                        <label>
+                            Valor:
+                            <input
+                                type="text"
+                                value={novaDespesa.valor}
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, valor: e.target.value })}
+                            />
+                        </label>
+                        <label>
+                            Data:
+                            <input
+                                type="date"
+                                value={novaDespesa.data}
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, data: e.target.value })}
+                            />
+                        </label>
+                        <label>
+                            Conta:
+                            <select
+                                value={novaDespesa.contaId}
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, contaId: e.target.value })}
+                            >
+                                <option value="">Selecione uma conta</option>
+                                {contas.map((conta: any) => (
+                                        <option key={conta.id} value={conta.id}>
+                                            {conta.nome}
+                                        </option>
+                                ))}
+                            </select>
+                        </label>
+                        <DisplayFlexUi>
+                            <ButtonUi type="submit">{editandoDespesa ? 'Editar Despesa' : 'Adicionar Despesa'}</ButtonUi>
+                            {editandoDespesa && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
+                        </DisplayFlexUi>
+                    </DisplayFlexUi>
+                </form>
+            </DisplayFlexUi>
+
+            <DisplayFlexUi flexDirection='column'>
+
+                <h3>Despesas</h3>
+                <ul>
+                    {despesas.map((despesa) => (
+                        <li key={despesa.id}>
+                            {despesa.nome} - R$ {despesa.valor} - Data: {getFormattedDate(despesa.data)} - Conta: {despesa.contaName}
+                            <ButtonUi onClick={() => setEditandoDespesa(despesa)}>Editar</ButtonUi>
+                            <ButtonUi onClick={() => excluirDespesa(despesa)}>Excluir</ButtonUi>
+                        </li>
+                    ))}
+                </ul>
+                <p>Soma despesas: R$ {somaDespesas}</p>
+            </DisplayFlexUi>
+        </DisplayFlexUi >
     );
 };
 

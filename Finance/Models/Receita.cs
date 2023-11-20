@@ -13,11 +13,13 @@ namespace Finance.Models
         public decimal Valor { get; set; }
         public DateTime Data { get; set; }
         public bool Status { get; set; }
+        public string Categoria { get; set; }
+        public DateTime Repeticao { get; set; }
+
+        // Vai ser no mesmo select
         public string CartaoId { get; set; }
         public string CartaoName { get; set; }
         public string ContaId { get; set; }
         public string ContaName { get; set; }
-        public string Categoria { get; set; }
-        public DateTime Repeticao { get; set; }
     }
 }

@@ -29,18 +29,21 @@ namespace Finance.Services
         public async Task<Despesa?> GetAsync(string id) =>
             await _despesaCollection.Find(y => y.Id == id).FirstOrDefaultAsync();
 
-        public async Task CreateAsync(DespesaViewModel newDespesa, CadConta cadConta)
+        public async Task CreateAsync(DespesaViewModel newDespesa, CadConta cadConta, CadCartao cadCartao)
         {
             var despesa = new Despesa();
             despesa.Nome = newDespesa.Nome;
             despesa.Data = newDespesa.Data;
             despesa.Valor = newDespesa.Valor;
+            despesa.Status = newDespesa.Status;
             despesa.ContaId = cadConta.Id;
             despesa.ContaName = cadConta.Nome;
+            despesa.CartaoId = cadCartao.Id;
+            despesa.CartaoName = cadCartao.Nome;
             await _despesaCollection.InsertOneAsync(despesa);
         }
 
-        public async Task UpdateAsync(string id, DespesaViewModel despesaViewModel, CadConta cadConta)
+        public async Task UpdateAsync(string id, DespesaViewModel despesaViewModel, CadConta cadConta, CadCartao cadCartao)
         {
             var despesa = await GetAsync(id);
 
@@ -48,6 +51,8 @@ namespace Finance.Services
             despesa.Valor = despesaViewModel.Valor;
             despesa.Data = despesaViewModel.Data;
             despesa.ContaId = despesaViewModel.ContaId;
+            despesa.CartaoId= despesaViewModel.CartaoId;
+            despesa.CartaoName = cadCartao.Nome;
             despesa.ContaName = cadConta.Nome;
 
             await _despesaCollection.ReplaceOneAsync(x => x.Id == id, despesa);

@@ -12,8 +12,13 @@ namespace Finance.Models
         public string Nome { get; set; }
         public decimal Valor { get; set; }
         public DateTime Data { get; set; }
+        public bool Status { get; set; }
+
+        //Vai ser no mesmo select
         public string ContaId { get; set; }
         public string ContaName { get; set;}
+        public string CartaoId { get; set; }
+        public string CartaoName { get; set; }
 
     }
 }

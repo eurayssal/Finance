@@ -111,8 +111,8 @@ const CadContasView = () => {
         <select 
             value={novaConta.atividade.toString()}
             onChange={(e) => setNovaConta({ ...novaConta, atividade: e.target.value === 'true' })}>
-            <option value={true.toString()}>Ativo</option>
-            <option value={false.toString()}>Inativo</option>
+            <option value='true'>Ativo</option>
+            <option value='false'>Inativo</option>
         </select>
     </label>
                 <button type="submit">{editandoConta ? 'Editar Conta' : 'Adicionar Conta'}</button>
