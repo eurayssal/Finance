@@ -14,5 +14,6 @@ namespace Finance.Models
 
         [BsonElement("Saldo")]
         public decimal Saldo { get; set; }
+        public bool Atividade { get; set; }
     }
 }

@@ -34,11 +34,6 @@ namespace Finance.Controllers
         {
             var conta = await _cadContaSerce.GetAsync(id);
 
-            if (conta is null)
-            {
-                return NotFound();
-            }
-
             await _cadContaSerce.RemoveAsync(id);
 
             return NoContent();

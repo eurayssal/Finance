@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import hookApi from "../../hooks/api";
+import { ICadConta } from "./model";
 
 const CadContasView = () => {
-    const [contas, setContas] = useState([]);
-    const [novaConta, setNovaConta] = useState({ nome: '', saldo: '' });
-    const [editandoConta, setEditandoConta] = useState(null);
+    const [contas, setContas] = useState<Array<ICadConta>>([]);
+    const [novaConta, setNovaConta] = useState({ nome: '', saldo: '', atividade: true });
+    const [editandoConta, setEditandoConta] = useState<ICadConta | null>(null);
 
     const api = hookApi();
 
@@ -20,12 +21,38 @@ const CadContasView = () => {
     const postConta = async () => {
         try {
             await api.post('/api/cadconta', novaConta);
-            setNovaConta({ nome: '', saldo: '' });
+            setNovaConta({ nome: '', saldo: '', atividade: true  });
             getContas();
         } catch (error) {
             console.error('Erro ao adicionar conta: ', error);
         }
     };
+
+    const editarConta = async () => {
+        try {
+            if(editandoConta && editandoConta.id){
+                const response = await api.put<ICadConta>(
+                    `api/despesa/${editandoConta.id}`,
+                    {
+                        nome: novaConta.nome,
+                        saldo: parseFloat(novaConta.saldo),
+                        atividade: novaConta.atividade
+                    }
+                )
+
+                setContas((prev) => {
+                    const props = prev.filter((w) => w.id !== response.data.id);
+                    return [...props, response.data];
+                });
+
+                setEditandoConta(null);
+                setNovaConta({ nome: '', saldo: '', atividade: true });
+                getContas();
+            }
+        } catch (error) {
+            console.log('Erro ao editar despesa: ', error);
+        }
+    }
 
     const excluirConta = async (conta: any) => {
         try {
@@ -46,7 +73,7 @@ const CadContasView = () => {
             <ul>
                 {contas.map((conta: any) => (
                     <li key={conta.id}>
-                        {conta.nome} - Saldo: R$ {conta.saldo}
+                        {conta.nome} - Saldo: R$ {conta.saldo} - Status: {conta.atividade}
                         <button onClick={() => excluirConta(conta)}>Excluir</button>
                     </li>
                 ))}
@@ -57,7 +84,7 @@ const CadContasView = () => {
                 onSubmit={(e) => {
                     e.preventDefault();
                     if (editandoConta) {
-                        // Lógica para editar conta (semelhante ao que fizemos para despesas)
+                        editarConta()
                     } else {
                         postConta();
                     }
@@ -79,6 +106,15 @@ const CadContasView = () => {
                         onChange={(e) => setNovaConta({ ...novaConta, saldo: e.target.value })}
                     />
                 </label>
+                <label>
+        Status:
+        <select 
+            value={novaConta.atividade.toString()}
+            onChange={(e) => setNovaConta({ ...novaConta, atividade: e.target.value === 'true' })}>
+            <option value={true.toString()}>Ativo</option>
+            <option value={false.toString()}>Inativo</option>
+        </select>
+    </label>
                 <button type="submit">{editandoConta ? 'Editar Conta' : 'Adicionar Conta'}</button>
             </form>
         </div>
