@@ -9,6 +9,7 @@ builder.Services.Configure<FinanceDatabaseSettings>(
 
 builder.Services.AddSingleton<FinanceDatabaseSettings>();
 builder.Services.AddSingleton<DespesaService>();
+builder.Services.AddSingleton<CadCartaoService>();
 builder.Services.AddSingleton<ReceitaService>();
 builder.Services.AddSingleton<CadContaService>();
 

@@ -10,7 +10,7 @@ namespace Finance.Models
         public string? Id { get; set; }
 
         [BsonElement("Nome")]
-        public string Nome{ get; set; }
+        public string? Nome{ get; set; }
         public string Tipo { get; set; }
         public DateTime DiaFechamento { get; set; }
         public DateTime DiaVencimento { get; set; }

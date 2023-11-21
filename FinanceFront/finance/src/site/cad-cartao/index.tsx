@@ -30,7 +30,7 @@ const CadCartaoView: React.FC = () => {
 
     useEffect(() => {
         getCartoes();
-    })
+    }, [])
 
     const postCartao = async () => {
         try {
