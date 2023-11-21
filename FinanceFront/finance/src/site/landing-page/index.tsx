@@ -30,6 +30,7 @@ const LandingPageView = () => {
     const toLancamentoDespesas = () => navigate('/lancamento-despesas')
     const toLancamentoReceitas = () => navigate('/lancamento-receitas')
     const toCadContas = () => navigate('/cadastro-contas')
+    const toCadCartoes = () => navigate('/cadastro-cartoes')
 
     return (
         <div>
@@ -37,7 +38,8 @@ const LandingPageView = () => {
             <DisplayFlexUi gap={8}>
                 <ButtonUi onClick={toLancamentoDespesas}>Lançamento de despesas</ButtonUi>
                 <ButtonUi onClick={toLancamentoReceitas}>Lançamento de receitas</ButtonUi>
-                <ButtonUi onClick={toCadContas}>Lançamento de receitas</ButtonUi>
+                <ButtonUi onClick={toCadContas}>Cadastro de contas</ButtonUi>
+                <ButtonUi onClick={toCadCartoes}>Cadastro de cartões</ButtonUi>
             </DisplayFlexUi>
 
             <div>

@@ -9,3 +9,8 @@ export interface IDespesa {
     contaId: string
     contaName: string
 }
+
+export interface IConta {
+    tipo: string;
+    atividade: boolean;
+}

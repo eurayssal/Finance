@@ -11,7 +11,7 @@ namespace Finance.Models
 
         [BsonElement("Nome")]
         public string Nome{ get; set; }
-        public decimal Limite { get; set; }
+        public string Tipo { get; set; }
         public DateTime DiaFechamento { get; set; }
         public DateTime DiaVencimento { get; set; }
         public decimal ValorFatura { get; set; }

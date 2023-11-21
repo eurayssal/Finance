@@ -3,4 +3,5 @@ export interface ICadConta {
     nome: string;
     saldo: number;
     atividade: boolean;
+    tipo: string
 }

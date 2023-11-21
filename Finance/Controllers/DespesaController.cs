@@ -33,6 +33,7 @@ namespace Finance.Controllers
                 s.Id,
                 s.Nome,
                 s.ContaId,
+                s.CartaoId,
                 s.ContaName,
                 s.Status,
                 Valor = s.Valor.ToString("C", new CultureInfo("pt-BR")),

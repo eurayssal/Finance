@@ -1,13 +1,23 @@
 import { useEffect, useState } from "react";
 import hookApi from "../../hooks/api";
 import { ICadConta } from "./model";
+import ButtonUi from "../../components/core/buttons/buttons";
+import DisplayFlexUi from "../../components/core/display/display-flex.ui";
 
 const CadContasView = () => {
+    const api = hookApi();
+
+    var dataConta = {
+        nome: '',
+        saldo: '',
+        atividade: true,
+        tipo: 'conta'
+    }
+
     const [contas, setContas] = useState<Array<ICadConta>>([]);
-    const [novaConta, setNovaConta] = useState({ nome: '', saldo: '', atividade: true });
+    const [novaConta, setNovaConta] = useState(dataConta);
     const [editandoConta, setEditandoConta] = useState<ICadConta | null>(null);
 
-    const api = hookApi();
 
     const getContas = async () => {
         try {
@@ -21,7 +31,7 @@ const CadContasView = () => {
     const postConta = async () => {
         try {
             await api.post('/api/cadconta', novaConta);
-            setNovaConta({ nome: '', saldo: '', atividade: true });
+            setNovaConta(dataConta);
             getContas();
         } catch (error) {
             console.error('Erro ao adicionar conta: ', error);
@@ -32,7 +42,7 @@ const CadContasView = () => {
         try {
             if (editandoConta && editandoConta.id) {
                 const response = await api.put<ICadConta>(
-                    `api/despesa/${editandoConta.id}`,
+                    `api/cadconta/${editandoConta.id}`,
                     {
                         nome: novaConta.nome,
                         saldo: parseFloat(novaConta.saldo),
@@ -46,7 +56,7 @@ const CadContasView = () => {
                 });
 
                 setEditandoConta(null);
-                setNovaConta({ nome: '', saldo: '', atividade: true });
+                setNovaConta(dataConta);
                 getContas();
             }
         } catch (error) {
@@ -63,21 +73,38 @@ const CadContasView = () => {
         }
     };
 
+    const cancelarEdicao = () => {
+        setEditandoConta(null);
+        setNovaConta(dataConta);
+    }
+
     useEffect(() => {
         getContas();
     }, []);
 
+    useEffect(() => {
+        if (editandoConta) {
+            setNovaConta({
+                nome: editandoConta.nome || '',
+                saldo: editandoConta.saldo ? editandoConta.saldo.toString() : '',
+                atividade: editandoConta.atividade,
+                tipo: editandoConta.tipo
+            })
+        }
+    }, [editandoConta])
 
     return (
         <div>
             <h2>Cadastro de Contas</h2>
             <ul>
-                {contas.map((conta: any) => (
-                    <li key={conta.id}>
-                        {conta.nome} - Saldo: R$ {conta.saldo} - Status: {conta.atividade ? 'Ativa' : 'Inativa'}
-                        <button onClick={() => excluirConta(conta)}>Excluir</button>
-                    </li>
-                ))}
+                {contas
+                    .map((conta) => (
+                        <li key={conta.id}>
+                            {conta.nome} - Saldo: R$ {conta.saldo} - Status: {conta.atividade ? 'Ativa' : 'Inativa'}
+                            <button onClick={() => setEditandoConta(conta)}>Editar</button>
+                            <button onClick={() => excluirConta(conta)}>Excluir</button>
+                        </li>
+                    ))}
             </ul>
 
             <h3>{editandoConta ? 'Editar Conta' : 'Adicionar Nova Conta'}</h3>
@@ -116,7 +143,10 @@ const CadContasView = () => {
                         <option value='false'>Inativo</option>
                     </select>
                 </label>
-                <button type="submit">{editandoConta ? 'Editar Conta' : 'Adicionar Conta'}</button>
+                <DisplayFlexUi>
+                    <ButtonUi type="submit">{editandoConta ? 'Editar Despesa' : 'Adicionar Despesa'}</ButtonUi>
+                    {editandoConta && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
+                </DisplayFlexUi>
             </form>
         </div>
     );

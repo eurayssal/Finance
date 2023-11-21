@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
-import { IDespesa } from './model';
+import { IConta, IDespesa } from './model';
 import hookApi from '../../hooks/api';
 import { useNavigate } from 'react-router-dom';
 import ButtonUi from '../../components/core/buttons/buttons';
@@ -9,9 +9,9 @@ import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 const LancamentoDespesasView = () => {
     const api = hookApi();
 
-    const [contas, setContas] = useState([]);
+    const [contas, setContas] = useState<Array<IConta>>([]);
     const [despesas, setDespesas] = useState<Array<IDespesa>>([]);
-    const [novaDespesa, setNovaDespesa] = useState({ nome: '', valor: '', data: '', contaId: '',status: true });
+    const [novaDespesa, setNovaDespesa] = useState({ nome: '', valor: '', data: '', contaId: '', status: true });
     const [editandoDespesa, setEditandoDespesa] = useState<IDespesa | null>(null);
     const [somaDespesas, setSomaDespesas] = useState<number>(0);
 
@@ -58,7 +58,7 @@ const LancamentoDespesasView = () => {
                 });
 
                 setEditandoDespesa(null);
-                setNovaDespesa({ nome: '', valor: '', data: '', contaId: '',status: true });
+                setNovaDespesa({ nome: '', valor: '', data: '', contaId: '', status: true });
                 getDespesas();
             }
         } catch (error) {
@@ -68,7 +68,7 @@ const LancamentoDespesasView = () => {
 
     const cancelarEdicao = () => {
         setEditandoDespesa(null);
-        setNovaDespesa({ nome: '', valor: '', data: '', contaId: '', status: true});
+        setNovaDespesa({ nome: '', valor: '', data: '', contaId: '', status: true });
     };
 
     const excluirDespesa = async (despesa: any) => {
@@ -122,7 +122,7 @@ const LancamentoDespesasView = () => {
                     ? new Date(editandoDespesa.data).toISOString().split('T')[0]
                     : '',
                 contaId: editandoDespesa.contaId || '',
-                status: editandoDespesa.status
+                status: editandoDespesa.status,
             });
         }
     }, [editandoDespesa]);
@@ -162,37 +162,42 @@ const LancamentoDespesasView = () => {
                             <input
                                 type="text"
                                 value={novaDespesa.nome}
-                                onChange={(e) => setNovaDespesa({ ...novaDespesa, nome: e.target.value })}/>
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, nome: e.target.value })} />
                         </label>
                         <label>Valor:
                             <input
                                 type="text"
                                 value={novaDespesa.valor}
-                                onChange={(e) => setNovaDespesa({ ...novaDespesa, valor: e.target.value })}/>
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, valor: e.target.value })} />
                         </label>
                         <label>Data:
                             <input
                                 type="date"
                                 value={novaDespesa.data}
-                                onChange={(e) => setNovaDespesa({ ...novaDespesa, data: e.target.value })}/>
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, data: e.target.value })} />
                         </label>
                         <label>Conta:
                             <select
                                 value={novaDespesa.contaId}
                                 onChange={(e) => setNovaDespesa({ ...novaDespesa, contaId: e.target.value })}>
+
                                 <option value="">Selecione uma conta</option>
-                                {contas.map((conta: any) => (
-                                        <option key={conta.id} value={conta.id}>
-                                            {conta.nome}
-                                        </option>
-                                ))}
+                                <optgroup label="Contas">
+                                    {contas
+                                        .filter((conta) => { return conta.atividade === true && conta.tipo === 'conta' })
+                                        .map((conta: any) => (
+                                            <option key={conta.id} value={conta.id}>
+                                                {conta.nome}
+                                            </option>
+                                        ))}
+                                </optgroup>
                             </select>
                         </label>
 
                         <label>Status:
-                            <select 
-                            value={novaDespesa.status.toString()}
-                            onChange={(e) => setNovaDespesa({...novaDespesa, status: e.target.value === 'true'})}>
+                            <select
+                                value={novaDespesa.status.toString()}
+                                onChange={(e) => setNovaDespesa({ ...novaDespesa, status: e.target.value === 'true' })}>
                                 <option value='true'>Ativo</option>
                                 <option value='false'>Inativo</option>
                             </select>
@@ -211,9 +216,9 @@ const LancamentoDespesasView = () => {
                 <ul>
                     {despesas.map((despesa) => (
                         <li key={despesa.id}>
-                            {despesa.nome} - R$ {despesa.valor} 
-                            - Data: {getFormattedDate(despesa.data)} 
-                            - Conta: {despesa.contaName} 
+                            {despesa.nome} - R$ {despesa.valor}
+                            - Data: {getFormattedDate(despesa.data)}
+                            - Conta: {despesa.contaName}
                             - Status: {despesa.status ? 'Paga' : 'Não paga'}
                             <ButtonUi onClick={() => setEditandoDespesa(despesa)}>Editar</ButtonUi>
                             <ButtonUi onClick={() => excluirDespesa(despesa)}>Excluir</ButtonUi>
