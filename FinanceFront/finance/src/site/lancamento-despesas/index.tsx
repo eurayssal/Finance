@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
-import { IConta, IDespesa } from './model';
+import { ICartao, IConta, IDespesa } from './model';
 import hookApi from '../../hooks/api';
 import { useNavigate } from 'react-router-dom';
 import ButtonUi from '../../components/core/buttons/buttons';
@@ -10,6 +10,7 @@ const LancamentoDespesasView = () => {
     const api = hookApi();
 
     const [contas, setContas] = useState<Array<IConta>>([]);
+    const [cartoes, setCartoes] = useState<Array<ICartao>>([]);
     const [despesas, setDespesas] = useState<Array<IDespesa>>([]);
     const [novaDespesa, setNovaDespesa] = useState({ nome: '', valor: '', data: '', contaId: '', status: true });
     const [editandoDespesa, setEditandoDespesa] = useState<IDespesa | null>(null);
@@ -26,6 +27,24 @@ const LancamentoDespesasView = () => {
             console.error('Erro ao obter despesas: ', error);
         }
     };
+
+    const getContas = async () => {
+        try {
+            const response = await api.get('/api/cadconta');
+            setContas(response.data);
+        } catch (error) {
+            console.error('Erro ao obter contas: ', error);
+        }
+    };
+
+    const getCartoes = async () => {
+        try {
+            const response = await api.get('/api/cadcartao')
+            setCartoes(response.data);
+        } catch (error) {
+            console.error('Erro ao obter cartões: ', error);
+        }
+    }
 
     const postDespesa = async () => {
         try {
@@ -98,19 +117,13 @@ const LancamentoDespesasView = () => {
         return `${day}/${month}/${year}`;
     };
 
-    const getContas = async () => {
-        try {
-            const response = await api.get('/api/cadconta');
-            setContas(response.data);
-        } catch (error) {
-            console.error('Erro ao obter contas: ', error);
-        }
-    };
+    
 
     useEffect(() => {
         getDespesas();
         getSomaDespesas();
         getContas();
+        getCartoes();
     }, []);
 
     useEffect(() => {
@@ -135,6 +148,7 @@ const LancamentoDespesasView = () => {
     const toLandingPage = () => navigate('/landing-page')
     const toLancamentoReceitas = () => navigate('/lancamento-receitas')
     const toCadContas = () => navigate('/cadastro-contas')
+    const toCadCartoes = () => navigate('/cadastro-cartoes')
 
     return (
         <DisplayFlexUi flexDirection='column'>
@@ -144,6 +158,7 @@ const LancamentoDespesasView = () => {
                 <ButtonUi onClick={toLancamentoReceitas}>Lancamento de receitas</ButtonUi>
                 <ButtonUi onClick={toLancamentoReceitas}>Lancamento de receitas</ButtonUi>
                 <ButtonUi onClick={toCadContas}>Cadastro de contas</ButtonUi>
+                <ButtonUi onClick={toCadCartoes}>Cadastro de cartões</ButtonUi>
             </DisplayFlexUi>
 
             <DisplayFlexUi flexDirection='column'>
@@ -179,9 +194,12 @@ const LancamentoDespesasView = () => {
                         <label>Conta:
                             <select
                                 value={novaDespesa.contaId}
-                                onChange={(e) => setNovaDespesa({ ...novaDespesa, contaId: e.target.value })}>
+                                onChange={(e) => {
+                                    setNovaDespesa({ ...novaDespesa, contaId: e.target.value });
+                                    console.log('e', e)
+                                }}>
 
-                                <option value="">Selecione uma conta</option>
+                                <option value="">Selecione uma conta ou cartão</option>
                                 <optgroup label="Contas">
                                     {contas
                                         .filter((conta) => { return conta.atividade === true && conta.tipo === 'conta' })
@@ -190,6 +208,14 @@ const LancamentoDespesasView = () => {
                                                 {conta.nome}
                                             </option>
                                         ))}
+                                </optgroup>
+                                <optgroup label='Cartões'>
+                                    {cartoes
+                                        .filter((cartao) => { return cartao.atividade === true && cartao.tipo === 'cartao' })
+                                        .map((cartao: any) => (
+                                            <option key={cartao.id} value={cartao.id}>
+                                                {cartao.nome}
+                                            </option>))}
                                 </optgroup>
                             </select>
                         </label>

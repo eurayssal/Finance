@@ -1,3 +1,5 @@
+import { StringifyOptions } from "querystring";
+
 export interface IDespesa {
     id: string;
     nome: string;
@@ -11,6 +13,11 @@ export interface IDespesa {
 }
 
 export interface IConta {
+    tipo: string;
+    atividade: boolean;
+}
+
+export interface ICartao {
     tipo: string;
     atividade: boolean;
 }

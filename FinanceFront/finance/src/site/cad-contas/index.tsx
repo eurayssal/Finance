@@ -9,9 +9,9 @@ const CadContasView = () => {
 
     var dataConta = {
         nome: '',
+        tipo: 'conta',
         saldo: '',
         atividade: true,
-        tipo: 'conta'
     }
 
     const [contas, setContas] = useState<Array<ICadConta>>([]);

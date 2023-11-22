@@ -26,8 +26,10 @@ namespace Finance.Services
         public async Task<CadCartao?> GetAsync(string id) =>
             await _cadCartaoCollection.Find(y => y.Id == id).FirstOrDefaultAsync();
 
-        public async Task CreateAsync(CadCartao newCadCartao) =>
+        public async Task CreateAsync(CadCartao newCadCartao)
+        {
             await _cadCartaoCollection.InsertOneAsync(newCadCartao);
+        }
 
         public async Task RemoveAsync(string id) =>
             await _cadCartaoCollection.DeleteOneAsync(x => x.Id == id);

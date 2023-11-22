@@ -5,4 +5,5 @@ export interface ICadCartao {
     diaFechamento: string;
     diaVencimento: string;
     atividade: boolean;
+    tipo: string,
 }

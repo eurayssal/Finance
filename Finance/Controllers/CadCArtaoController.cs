@@ -1,6 +1,7 @@
 using Finance.Models;
 using Finance.Services;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Finance.Controllers
 {
@@ -9,6 +10,7 @@ namespace Finance.Controllers
     public class CadCartaoController : ControllerBase
     {
         private readonly CadCartaoService _cadCartaoService;
+        private readonly DespesaService _despesaService;
 
         public CadCartaoController(CadCartaoService cadCartaoService)
         {
@@ -18,8 +20,8 @@ namespace Finance.Controllers
         [HttpGet]
         public async Task<ActionResult<List<CadCartao>>> GetCartao()
         {
-            var cartoes = await _cadCartaoService.GetAsync();
-            return (cartoes);
+            var cartao = await _cadCartaoService.GetAsync();
+            return Ok(cartao);
         }
 
         [HttpPost]
@@ -38,6 +40,29 @@ namespace Finance.Controllers
             await _cadCartaoService.RemoveAsync(id);
 
             return NoContent();
+        }
+
+        [HttpGet("soma/{cartaoId:length(24)}")]
+        public async Task<IActionResult> GetSomaFatura (string cartaoId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var despesaDoCartao = await _despesaService.GetDespesasPorCartaoAsync(cartaoId, cancellationToken);
+
+                if (!despesaDoCartao.Any())
+                {
+                    despesaDoCartao.Add(new Despesa
+                    {
+                        Valor = 0
+                    });
+                }
+
+                var somaDespesa = despesaDoCartao.Sum(despesa => despesa.Valor);
+                return Ok(new { SomaDespesa  = somaDespesa });
+            } catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro ao calcular a soma das despesas: {ex.Message}");
+            }
         }
     }
 }

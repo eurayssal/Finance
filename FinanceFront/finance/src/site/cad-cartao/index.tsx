@@ -9,7 +9,8 @@ const CadCartaoView: React.FC = () => {
 
     var dataCartao = {
         nome: '',
-        valorFatura: '',
+        tipo: 'cartao',
+        valorFatura: '0',
         diaFechamento: '',
         diaVencimento: '',
         atividade: true
@@ -95,10 +96,11 @@ const CadCartaoView: React.FC = () => {
                 diaVencimento: editandoCartao.diaVencimento
                     ? new Date(editandoCartao.diaVencimento).toISOString().split('T')[0]
                     : '',
-                atividade: editandoCartao.atividade
+                atividade: editandoCartao.atividade,
+                tipo: editandoCartao.tipo || '',
             })
         }
-    })
+    },[])
 
     return (
         <div>
