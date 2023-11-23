@@ -1,23 +1,24 @@
 import { useEffect, useState } from "react";
 import hookApi from "../../hooks/api";
-import { ICadConta } from "./model";
+import { ICadConta, IContaCreate } from "./model";
 import ButtonUi from "../../components/core/buttons/buttons";
 import DisplayFlexUi from "../../components/core/display/display-flex.ui";
+import { useNavigate } from "react-router-dom";
+import InputUi from "../../components/form/inputUi";
+import SiteLayout from "../_layout";
 
+const dataConta = {
+    nome: '',
+    tipo: 'conta',
+    saldo: '',
+    atividade: true,
+}
 const CadContasView = () => {
     const api = hookApi();
 
-    var dataConta = {
-        nome: '',
-        tipo: 'conta',
-        saldo: '',
-        atividade: true,
-    }
-
     const [contas, setContas] = useState<Array<ICadConta>>([]);
-    const [novaConta, setNovaConta] = useState(dataConta);
+    const [novaConta, setNovaConta] = useState<IContaCreate>(dataConta);
     const [editandoConta, setEditandoConta] = useState<ICadConta | null>(null);
-
 
     const getContas = async () => {
         try {
@@ -64,7 +65,7 @@ const CadContasView = () => {
         }
     }
 
-    const excluirConta = async (conta: any) => {
+    const excluirConta = async (conta: ICadConta) => {
         try {
             await api.delete(`/api/cadconta/${conta.id}`);
             getContas();
@@ -93,62 +94,77 @@ const CadContasView = () => {
         }
     }, [editandoConta])
 
-    return (
-        <div>
-            <h2>Cadastro de Contas</h2>
-            <ul>
-                {contas
-                    .map((conta) => (
-                        <li key={conta.id}>
-                            {conta.nome} - Saldo: R$ {conta.saldo} - Status: {conta.atividade ? 'Ativa' : 'Inativa'}
-                            <button onClick={() => setEditandoConta(conta)}>Editar</button>
-                            <button onClick={() => excluirConta(conta)}>Excluir</button>
-                        </li>
-                    ))}
-            </ul>
+    const navigate = useNavigate();
+    const toLancamentoDespesas = () => navigate('/lancamento-despesas')
+    const toLancamentoReceitas = () => navigate('/lancamento-receitas')
+    const toCadContas = () => navigate('/cadastro-contas')
+    const toCadCartoes = () => navigate('/cadastro-cartoes')
 
-            <h3>{editandoConta ? 'Editar Conta' : 'Adicionar Nova Conta'}</h3>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    if (editandoConta) {
-                        editarConta()
-                    } else {
-                        postConta();
-                    }
-                }}
-            >
-                <label>
-                    Nome da Conta:
-                    <input
-                        type="text"
-                        value={novaConta.nome}
-                        onChange={(e) => setNovaConta({ ...novaConta, nome: e.target.value })}
-                    />
-                </label>
-                <label>
-                    Saldo:
-                    <input
-                        type="text"
-                        value={novaConta.saldo}
-                        onChange={(e) => setNovaConta({ ...novaConta, saldo: e.target.value })}
-                    />
-                </label>
-                <label>
-                    Status:
-                    <select
-                        value={novaConta.atividade.toString()}
-                        onChange={(e) => setNovaConta({ ...novaConta, atividade: e.target.value === 'true' })}>
-                        <option value='true'>Ativo</option>
-                        <option value='false'>Inativo</option>
-                    </select>
-                </label>
-                <DisplayFlexUi>
-                    <ButtonUi type="submit">{editandoConta ? 'Editar Despesa' : 'Adicionar Despesa'}</ButtonUi>
-                    {editandoConta && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
+    const handleChangeNome = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNovaConta({ ...novaConta, nome: e.target.value })
+    }
+
+    const handleChangeSaldo = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNovaConta({ ...novaConta, saldo: e.target.value })
+    }
+    return (
+        <SiteLayout>
+            <DisplayFlexUi flexDirection="column">
+                <h2>Cadastro de Contas</h2>
+                <DisplayFlexUi flexDirection='row' gap={32}>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            if (editandoConta) {
+                                editarConta()
+                            } else {
+                                postConta();
+                            }
+                        }}>
+                        <h3>{editandoConta ? 'Editar Conta' : 'Adicionar Nova Conta'}</h3>
+                        <DisplayFlexUi flexDirection="column" gap={16}>
+
+                            <InputUi name="Nome da conta"
+                                label="Nome da conta"
+                                type="text"
+                                value={novaConta.nome}
+                                onChange={handleChangeNome} />
+                            <InputUi name="Saldo"
+                                label="Saldo"
+                                type="text"
+                                value={novaConta.saldo}
+                                onChange={(e) => setNovaConta({ ...novaConta, saldo: e.target.value })} />
+                            <label>
+                                Status:
+                                <select
+                                    value={novaConta.atividade.toString()}
+                                    onChange={(e) => setNovaConta({ ...novaConta, atividade: e.target.value === 'true' })}>
+                                    <option value='true'>Ativo</option>
+                                    <option value='false'>Inativo</option>
+                                </select>
+                            </label>
+                            <DisplayFlexUi>
+                                <ButtonUi type="submit">{editandoConta ? 'Editar Despesa' : 'Adicionar Despesa'}</ButtonUi>
+                                {editandoConta && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
+                            </DisplayFlexUi>
+                        </DisplayFlexUi>
+                    </form>
+
+                    <DisplayFlexUi flexDirection="column">
+                        <ul>
+                            {contas
+                                .map((conta) => (
+                                    <li key={conta.id}>
+                                        {conta.nome} - Saldo: R$ {conta.saldo} - Status: {conta.atividade ? 'Ativa' : 'Inativa'}
+                                        <ButtonUi onClick={() => setEditandoConta(conta)}>Editar</ButtonUi>
+                                        <ButtonUi onClick={() => excluirConta(conta)}>Excluir</ButtonUi>
+                                    </li>
+                                ))}
+                        </ul>
+                    </DisplayFlexUi>
                 </DisplayFlexUi>
-            </form>
-        </div>
+            </DisplayFlexUi>
+        </SiteLayout>
     );
 };
 

@@ -1,5 +1,3 @@
-import { StringifyOptions } from "querystring";
-
 export interface IDespesa {
     id: string;
     nome: string;
@@ -10,6 +8,14 @@ export interface IDespesa {
     cartaoName: string;
     contaId: string
     contaName: string
+}
+
+export interface IDespesaCreate {
+    nome: string;
+    valor: string;
+    data: string;
+    status: boolean;
+    contaId: string;
 }
 
 export interface IConta {

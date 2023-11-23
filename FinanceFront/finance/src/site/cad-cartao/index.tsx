@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import hookApi from '../../hooks/api';
-import { ICadCartao } from './model';
+import { ICadCartao, ICartaoCreate } from './model';
 import ButtonUi from '../../components/core/buttons/buttons';
 import DisplayFlexUi from '../../components/core/display/display-flex.ui';
+import SiteLayout from '../_layout';
+import InputUi from '../../components/form/inputUi';
 
 const CadCartaoView: React.FC = () => {
     const api = hookApi();
@@ -17,7 +19,7 @@ const CadCartaoView: React.FC = () => {
     }
 
     const [cartoes, setCartoes] = useState<Array<ICadCartao>>([]);
-    const [novoCartao, setNovoCartao] = useState(dataCartao)
+    const [novoCartao, setNovoCartao] = useState<ICartaoCreate>(dataCartao)
     const [editandoCartao, setEditandoCartao] = useState<ICadCartao | null>(null)
 
     const getCartoes = async () => {
@@ -85,6 +87,15 @@ const CadCartaoView: React.FC = () => {
         setNovoCartao(dataCartao);
     }
 
+    const getFormattedDate = (isoDate: string | number | Date) => {
+        const date = new Date(isoDate);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${day}/${month}/${year}`;
+    };
+
     useEffect(() => {
         if (editandoCartao) {
             setNovoCartao({
@@ -100,66 +111,72 @@ const CadCartaoView: React.FC = () => {
                 tipo: editandoCartao.tipo || '',
             })
         }
-    },[])
+    }, [])
 
     return (
-        <div>
-            <div>
-            <h2>Cadastro de Cartões</h2>
-            <ul>
-                {cartoes
-                    .map((cartao) => (
-                        <li key={cartao.id}>
-                            {cartao.nome} - Fatura: R$ {cartao.valorFatura} - Dia do vencimento: {cartao.diaVencimento} - Dia do fechamento: {cartao.diaFechamento}
-                            <ButtonUi onClick={() => setEditandoCartao(cartao)}>Editar</ButtonUi>
-                            <ButtonUi onClick={() => excluirCartao(cartao)}>Excluir</ButtonUi>
-                        </li>
-                    ))}
-            </ul>
-
-            <h3>{editandoCartao ? 'Editar Cartão' : 'Adicionar Novo Cartão'}</h3>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    if (editandoCartao) {
-                        editarCartao()
-                    } else {
-                        postCartao()
-                    }
-                }}>
-                <label>Nome do Cartão:
-                    <input
-                        type="text"
-                        value={novoCartao.nome}
-                        onChange={(e) => setNovoCartao({ ...novoCartao, nome: e.target.value })} />
-                </label>
-                <label>Data de fechamento:
-                    <input
-                        type="date"
-                        value={novoCartao.diaFechamento}
-                        onChange={(e) => setNovoCartao({ ...novoCartao, diaFechamento: e.target.value })} />
-                </label>
-                <label>Data de vencimento:
-                    <input
-                        type="date"
-                        value={novoCartao.diaVencimento}
-                        onChange={(e) => setNovoCartao({ ...novoCartao, diaVencimento: e.target.value })} />
-                </label>
-                <label>Status:
-                    <select
-                        value={novoCartao.atividade.toString()}
-                        onChange={(e) => setNovoCartao({ ...novoCartao, atividade: e.target.value === 'true' })}>
-                        <option value='true'>Ativo</option>
-                        <option value='false'>Inativo</option>
-                    </select>
-                </label>
-                <DisplayFlexUi>
-                    <ButtonUi type="submit">{editandoCartao ? 'Editar Cartão' : 'Adicionar Cartão'}</ButtonUi>
-                    {editandoCartao && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
+        <SiteLayout>
+            <DisplayFlexUi flexDirection='column'>
+                <h2>Cadastro de Cartões</h2>
+                <DisplayFlexUi flexDirection='row' gap={32}>
+                    <DisplayFlexUi flexDirection='column'>
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (editandoCartao) {
+                                    editarCartao()
+                                } else {
+                                    postCartao()
+                                }
+                            }}>
+                            <h3>{editandoCartao ? 'Editar Cartão' : 'Adicionar Novo Cartão'}</h3>
+                            <DisplayFlexUi flexDirection='column' gap={16}>
+                                <InputUi name='Nome do cartao'
+                                    label='Nome do Cartão'
+                                    type="text"
+                                    value={novoCartao.nome}
+                                    onChange={(e) => setNovoCartao({ ...novoCartao, nome: e.target.value })} />
+                                <InputUi name='Data de fechamento'
+                                    label='Data de fechamento'
+                                    type="date"
+                                    value={novoCartao.diaFechamento}
+                                    onChange={(e) => setNovoCartao({ ...novoCartao, diaFechamento: e.target.value })} />
+                                <InputUi name='Data de vencimento'
+                                    label='Data de vencimento'
+                                    type="date"
+                                    value={novoCartao.diaVencimento}
+                                    onChange={(e) => setNovoCartao({ ...novoCartao, diaVencimento: e.target.value })} />
+                                <label>Status:
+                                    <select
+                                        value={novoCartao.atividade.toString()}
+                                        onChange={(e) => setNovoCartao({ ...novoCartao, atividade: e.target.value === 'true' })}>
+                                        <option value='true'>Ativo</option>
+                                        <option value='false'>Inativo</option>
+                                    </select>
+                                </label>
+                                <DisplayFlexUi>
+                                    <ButtonUi type="submit">{editandoCartao ? 'Editar Cartão' : 'Adicionar Cartão'}</ButtonUi>
+                                    {editandoCartao && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
+                                </DisplayFlexUi>
+                            </DisplayFlexUi>
+                        </form>
+                    </DisplayFlexUi>
+                    <ul>
+                        {cartoes
+                            .map((cartao) => (
+                                <li key={cartao.id}>
+                                    {cartao.nome}
+                                    - Fatura: R$ {cartao.valorFatura}
+                                    - Dia do vencimento: {getFormattedDate(cartao.diaVencimento)}
+                                    - Dia do fechamento: {getFormattedDate(cartao.diaFechamento)}
+                                    - Status: {cartao.atividade ? 'Ativo' : 'Inativo'}
+                                    <ButtonUi onClick={() => setEditandoCartao(cartao)}>Editar</ButtonUi>
+                                    <ButtonUi onClick={() => excluirCartao(cartao)}>Excluir</ButtonUi>
+                                </li>
+                            ))}
+                    </ul>
                 </DisplayFlexUi>
-            </form>
-            </div>
-        </div>
+            </DisplayFlexUi>
+        </SiteLayout>
     )
 }
 

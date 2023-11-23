@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import hookApi from '../../hooks/api';
-import ButtonUi from '../../components/core/buttons/buttons';
 import DisplayFlexUi from '../../components/core/display/display-flex.ui';
+import SiteLayout from '../_layout';
 
 const LandingPageView = () => {
     const api = hookApi();
@@ -21,33 +20,21 @@ const LandingPageView = () => {
             console.error('Erro ao obter as informações de saldo: ', error);
         }
     }
-
     useEffect(() => {
         getSaldo()
     }, [])
 
-    const navigate = useNavigate();
-    const toLancamentoDespesas = () => navigate('/lancamento-despesas')
-    const toLancamentoReceitas = () => navigate('/lancamento-receitas')
-    const toCadContas = () => navigate('/cadastro-contas')
-    const toCadCartoes = () => navigate('/cadastro-cartoes')
-
     return (
-        <div>
-            <h2>LandingPageView</h2>
-            <DisplayFlexUi gap={8}>
-                <ButtonUi onClick={toLancamentoDespesas}>Lançamento de despesas</ButtonUi>
-                <ButtonUi onClick={toLancamentoReceitas}>Lançamento de receitas</ButtonUi>
-                <ButtonUi onClick={toCadContas}>Cadastro de contas</ButtonUi>
-                <ButtonUi onClick={toCadCartoes}>Cadastro de cartões</ButtonUi>
+        <SiteLayout>
+            <DisplayFlexUi flexDirection='column'>
+                <h2>LandingPageView</h2>
+                <DisplayFlexUi flexDirection='column'>
+                    <p>Soma de despesas: R$ {somaDespesas}</p>
+                    <p>Soma de receitas: R$ {somaReceitas}</p>
+                    <p>Saldo disponível: R$ {saldo}</p>
+                </DisplayFlexUi>
             </DisplayFlexUi>
-
-            <div>
-                <h3>Soma de despesas: R$ {somaDespesas}</h3>
-                <h3>Soma de receitas: R$ {somaReceitas}</h3>
-                <h3>Saldo disponível: R$ {saldo}</h3>
-            </div>
-        </div>
+        </SiteLayout>
     );
 };
 

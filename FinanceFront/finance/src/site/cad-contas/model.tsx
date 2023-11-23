@@ -5,3 +5,10 @@ export interface ICadConta {
     atividade: boolean;
     tipo: string
 }
+
+export interface IContaCreate {
+    nome: string;
+    tipo: string,
+    saldo: string,
+    atividade: boolean,
+}

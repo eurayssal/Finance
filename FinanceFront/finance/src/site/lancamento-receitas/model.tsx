@@ -3,3 +3,8 @@ export interface IReceita {
     nome: string;
     valor: number;
 }
+
+export interface IReceitaCreate {
+    nome: string;
+    valor: string;
+}
