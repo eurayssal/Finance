@@ -9,32 +9,36 @@ const Input = styled.input`
 
 const formatMoney = (value: string): string => {
     const numericValue = value.replace(/[^0-9]/g, '');
-    const formattedValue = (parseFloat(numericValue) / 100).toFixed(2);
-    const normalizedValue = formattedValue.replace('.', ',');
-    const floatValue = parseFloat(normalizedValue)
+        const formattedValue = (parseFloat(numericValue) / 100).toFixed(2);
+        const normalizedValue = formattedValue.replace('.', ',');
+         const floatValue = parseFloat(normalizedValue)
 
     if (isNaN(floatValue)) {
         return ''
     }
-    return normalizedValue;
+
+  const displayValue = `R$ ${formattedValue.replace('.', ',')}`;
+
+  return displayValue;
 };
 
 const InputMoneyUi: React.FC<IMoneyInputProps> = ({ value, onChange }) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
+    const formattedValue = formatMoney(inputValue);
+    
+    const numericValue = formattedValue.replace('R$ ', '').replace(',', '.');
+    onChange(numericValue);
+  };
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const inputValue = event.target.value;
-        const formattedValue = formatMoney(inputValue);
-        onChange(formattedValue.replace(',', '.'));
-    };
-
-    return (
-        <Input
-            type="text"
-            value={formatMoney(value)}
-            onChange={handleChange}
-            placeholder="R$ 00,00"
-        />
-    );
+  return (
+    <Input
+      type="text"
+      value={formatMoney(value)}
+      onChange={handleChange}
+      placeholder="R$ 00,00"
+    />
+  );
 };
 
 export default InputMoneyUi;
