@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import hookApi from "../../hooks/api";
 import { ICadConta, IContaCreate } from "./model";
 import ButtonUi from "../../components/core/buttons/buttons";
-import DisplayFlexUi from "../../components/core/display/display-flex.ui";
 import { useNavigate } from "react-router-dom";
 import InputUi from "../../components/form/inputUi";
 import SiteLayout from "../_layout";
+import InputMoneyUi from "../../components/core/input-money";
+import DisplayFlexUi from "../../components/core/display/display-flex.ui";
+import { maskMoney } from "../../utils/mold/money.mold";
 
 const dataConta = {
     nome: '',
@@ -98,8 +100,8 @@ const CadContasView = () => {
         setNovaConta({ ...novaConta, nome: e.target.value })
     }
 
-    const handleChangeSaldo = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNovaConta({ ...novaConta, saldo: e.target.value })
+    const handleChangeSaldo = (valor: string) => {
+        setNovaConta({ ...novaConta, saldo: valor })
     }
     return (
         <SiteLayout>
@@ -118,16 +120,8 @@ const CadContasView = () => {
                         <h3>{editandoConta ? 'Editar Conta' : 'Adicionar Nova Conta'}</h3>
                         <DisplayFlexUi flexDirection="column" gap={16}>
 
-                            <InputUi name="Nome da conta"
-                                label="Nome da conta"
-                                type="text"
-                                value={novaConta.nome}
-                                onChange={handleChangeNome} />
-                            <InputUi name="Saldo"
-                                label="Saldo"
-                                type="text"
-                                value={novaConta.saldo}
-                                onChange={(e) => setNovaConta({ ...novaConta, saldo: e.target.value })} />
+                            <InputUi name="Nome da conta" label="Nome da conta" type="text" value={novaConta.nome} onChange={handleChangeNome} />
+                            <InputMoneyUi name="Saldo" label="Saldo" value={novaConta.saldo} onChange={handleChangeSaldo} />
                             <label>
                                 Status:
                                 <select
@@ -149,7 +143,7 @@ const CadContasView = () => {
                             {contas
                                 .map((conta) => (
                                     <li key={conta.id}>
-                                        {conta.nome} - Saldo: R$ {conta.saldo} - Status: {conta.atividade ? 'Ativa' : 'Inativa'}
+                                        {conta.nome} - Saldo: R$ {maskMoney(conta.saldo)} - Status: {conta.atividade ? 'Ativa' : 'Inativa'}
                                         <ButtonUi onClick={() => setEditandoConta(conta)}>Editar</ButtonUi>
                                         <ButtonUi onClick={() => excluirConta(conta)}>Excluir</ButtonUi>
                                     </li>

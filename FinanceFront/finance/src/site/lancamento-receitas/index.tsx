@@ -7,6 +7,8 @@ import InputUi from '../../components/core/input';
 import ButtonUi from '../../components/core/buttons/buttons';
 import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 import SiteLayout from '../_layout';
+import InputMoneyUi from '../../components/core/input-money';
+import { maskMoney } from '../../utils/mold/money.mold';
 
 const dataReceita = {
     nome: '',
@@ -110,8 +112,8 @@ const LancamentoReceitasView = () => {
         setNovaReceita({ ...novaReceita, nome: e.target.value });
     }
 
-    const handleChangeValor = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNovaReceita({ ...novaReceita, valor:  replaceBrMoney(e.target.value)});
+    const handleChangeValor = (value: string) => {
+        setNovaReceita({ ...novaReceita, valor:  value});
     }
     
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -123,9 +125,6 @@ const LancamentoReceitasView = () => {
             postReceita();
         }
     }
-    
-    const moneyFormat = (valor: any) => valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const replaceBrMoney = (valor: string): string => valor.replace(',', '.');
 
     return (
         <SiteLayout>
@@ -138,7 +137,7 @@ const LancamentoReceitasView = () => {
                         <form onSubmit={handleSubmit}>
                             <DisplayFlexUi flexDirection='column' gap={16}>
                                 <InputUi label='Nome' name='Nome' type="text" value={novaReceita.nome} onChange={handleChangeNome} />
-                                <InputUi name='Valor' label='Valor' type="text" value={novaReceita.valor} onChange={handleChangeValor} />
+                                <InputMoneyUi name='Valor' label='Valor' value={novaReceita.valor} onChange={handleChangeValor} />
                                 <ButtonUi type="submit">{editandoReceita ? 'Editar Receita' : 'Adicionar Receita'}</ButtonUi>
                                 {editandoReceita && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
                             </DisplayFlexUi>
@@ -148,7 +147,7 @@ const LancamentoReceitasView = () => {
                         <ul>
                             {receitas.map((receita) => (
                                 <li key={receita.id}>
-                                    {receita.nome} - R$ {moneyFormat(receita.valor)}
+                                    {receita.nome} - R$ {maskMoney(receita.valor)}
                                     <ButtonUi variant='secondary' onClick={() => setEditandoReceita(receita)}>Editar</ButtonUi>
                                     <ButtonUi variant='secondary' onClick={() => excluirReceita(receita)}>Excluir</ButtonUi>
                                 </li>

@@ -208,7 +208,7 @@ const LancamentoDespesasView = () => {
                             }}>
                             <DisplayFlexUi flexDirection='column' gap={16} width={300}>
                                 <InputUi name='Nome' label='Nome' type="text" value={novaDespesa.nome} onChange={handleChangeNome} />
-                                <InputMoneyUi label='Valor' value={novaDespesa.valor} onChange={handleChangeValor} name={''} />
+                                <InputMoneyUi name='Valor' label='Valor' value={novaDespesa.valor} onChange={handleChangeValor} />
                                 <InputUi name='Data' label='Data' type="date" value={novaDespesa.data} onChange={handleChangeData} />
                                 <label>Conta:
                                     <select value={novaDespesa.contaCartaoId} onChange={handleChangeConta}>
