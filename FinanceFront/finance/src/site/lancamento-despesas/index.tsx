@@ -6,6 +6,8 @@ import ButtonUi from '../../components/core/buttons/buttons';
 import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 import InputUi from '../../components/form/inputUi';
 import SiteLayout from '../_layout';
+import MoneyInput from '../../components/core/input-money';
+import InputMoneyUi from '../../components/core/input-money';
 
 const dataDespesa = {
     nome: '',
@@ -176,8 +178,8 @@ const LancamentoDespesasView = () => {
         setNovaDespesa({ ...novaDespesa, nome: e.target.value })
     }
 
-    const handleChangeValor = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNovaDespesa({ ...novaDespesa, valor: e.target.value })
+    const handleChangeValor = (e: string) => {
+        setNovaDespesa({ ...novaDespesa, valor: e })
     }
 
     const handleChangeData = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,7 +209,7 @@ const LancamentoDespesasView = () => {
                             }}>
                             <DisplayFlexUi flexDirection='column' gap={16} width={300}>
                                 <InputUi name='Nome' label='Nome' type="text" value={novaDespesa.nome} onChange={handleChangeNome} />
-                                <InputUi label='Valor' name='Valor' type="text" value={novaDespesa.valor} onChange={handleChangeValor} />
+                                <InputMoneyUi value={novaDespesa.valor} onChange={handleChangeValor} />
                                 <InputUi name='Data' label='Data' type="date" value={novaDespesa.data} onChange={handleChangeData} />
                                 <label>Conta:
                                     <select value={novaDespesa.contaCartaoId} onChange={handleChangeConta}>
