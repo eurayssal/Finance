@@ -10,7 +10,6 @@ namespace Finance.Controllers
     public class CadCartaoController : ControllerBase
     {
         private readonly CadCartaoService _cadCartaoService;
-        private readonly DespesaService _despesaService;
 
         public CadCartaoController(CadCartaoService cadCartaoService)
         {
@@ -42,27 +41,27 @@ namespace Finance.Controllers
             return NoContent();
         }
 
-        [HttpGet("soma/{cartaoId:length(24)}")]
-        public async Task<IActionResult> GetSomaFatura (string cartaoId, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var despesaDoCartao = await _despesaService.GetDespesasPorCartaoAsync(cartaoId, cancellationToken);
+        //[HttpGet("soma/{cartaoId:length(24)}")]
+        //public async Task<IActionResult> GetSomaFatura (string cartaoId, CancellationToken cancellationToken)
+        //{
+        //    try
+        //    {
+        //        var despesaDoCartao = await _despesaService.GetDespesasPorCartaoAsync(cartaoId, cancellationToken);
 
-                if (!despesaDoCartao.Any())
-                {
-                    despesaDoCartao.Add(new Despesa
-                    {
-                        Valor = 0
-                    });
-                }
+        //        if (!despesaDoCartao.Any())
+        //        {
+        //            despesaDoCartao.Add(new Despesa
+        //            {
+        //                Valor = 0
+        //            });
+        //        }
 
-                var somaDespesa = despesaDoCartao.Sum(despesa => despesa.Valor);
-                return Ok(new { SomaDespesa  = somaDespesa });
-            } catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro ao calcular a soma das despesas: {ex.Message}");
-            }
-        }
+        //        var somaDespesa = despesaDoCartao.Sum(despesa => despesa.Valor);
+        //        return Ok(new { SomaDespesa  = somaDespesa });
+        //    } catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Erro ao calcular a soma das despesas: {ex.Message}");
+        //    }
+        //}
     }
 }

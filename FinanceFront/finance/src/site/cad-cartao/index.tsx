@@ -6,9 +6,6 @@ import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 import SiteLayout from '../_layout';
 import InputUi from '../../components/form/inputUi';
 
-const CadCartaoView: React.FC = () => {
-    const api = hookApi();
-
     var dataCartao = {
         nome: '',
         tipo: 'cartao',
@@ -17,6 +14,9 @@ const CadCartaoView: React.FC = () => {
         diaVencimento: '',
         atividade: true
     }
+
+const CadCartaoView: React.FC = () => {
+    const api = hookApi();
 
     const [cartoes, setCartoes] = useState<Array<ICadCartao>>([]);
     const [novoCartao, setNovoCartao] = useState<ICartaoCreate>(dataCartao)

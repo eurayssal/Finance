@@ -75,8 +75,7 @@ const LancamentoDespesasView = () => {
                         valor: parseFloat(novaDespesa.valor),
                         data: novaDespesa.data ? new Date(novaDespesa.data) : null,
                         contaId: novaDespesa.contaId
-                    }
-                );
+                    });
 
                 setDespesas((prev) => {
                     const props = prev.filter((w) => w.id !== response.data.id);
@@ -94,7 +93,7 @@ const LancamentoDespesasView = () => {
 
     const cancelarEdicao = () => {
         setEditandoDespesa(null);
-        setNovaDespesa({ nome: '', valor: '', data: '', contaId: '', status: true });
+        setNovaDespesa(dataDespesa);
     };
 
     const excluirDespesa = async (despesa: IDespesa) => {
@@ -183,39 +182,20 @@ const LancamentoDespesasView = () => {
                                 }
                             }}>
                             <DisplayFlexUi flexDirection='column' gap={16} width={300}>
-                                <InputUi name='Nome'
-                                    label='Nome'
-                                    type="text"
-                                    value={novaDespesa.nome}
-                                    onChange={handleChangeNome} />
-                                <InputUi
-                                    label='Valor'
-                                    name='Valor'
-                                    type="text"
-                                    value={novaDespesa.valor}
-                                    onChange={handleChangeValor} />
-                                <InputUi name='Data'
-                                    label='Data'
-                                    type="date"
-                                    value={novaDespesa.data}
-                                    onChange={handleChangeData} />
+                                <InputUi name='Nome' label='Nome' type="text" value={novaDespesa.nome} onChange={handleChangeNome} />
+                                <InputUi label='Valor' name='Valor' type="text" value={novaDespesa.valor} onChange={handleChangeValor} />
+                                <InputUi name='Data' label='Data' type="date" value={novaDespesa.data} onChange={handleChangeData} />
                                 <label>Conta:
-                                    <select value={novaDespesa.contaId}
-                                        onChange={handleChangeConta}>
-
+                                    <select value={novaDespesa.contaId} onChange={handleChangeConta}>
                                         <option value="">Selecione uma conta ou cartão</option>
                                         <optgroup label="Contas">
-                                            {contas
-                                                .filter((conta) => { return conta.atividade === true && conta.tipo === 'conta' })
+                                            {contas.filter((conta) => { return conta.atividade === true && conta.tipo === 'conta' })
                                                 .map((conta: any) => (
-                                                    <option key={conta.id} value={conta.id}>
-                                                        {conta.nome}
-                                                    </option>
+                                                    <option key={conta.id} value={conta.id}>{conta.nome}</option>
                                                 ))}
                                         </optgroup>
                                         <optgroup label='Cartões'>
-                                            {cartoes
-                                                .filter((cartao) => { return cartao.atividade === true && cartao.tipo === 'cartao' })
+                                            {cartoes.filter((cartao) => { return cartao.atividade === true && cartao.tipo === 'cartao' })
                                                 .map((cartao: any) => (
                                                     <option key={cartao.id} value={cartao.id}>
                                                         {cartao.nome}
@@ -225,9 +205,7 @@ const LancamentoDespesasView = () => {
                                 </label>
 
                                 <label>Status:
-                                    <select
-                                        value={novaDespesa.status.toString()}
-                                        onChange={(e) => setNovaDespesa({ ...novaDespesa, status: e.target.value === 'true' })}>
+                                    <select value={novaDespesa.status.toString()} onChange={(e) => setNovaDespesa({ ...novaDespesa, status: e.target.value === 'true' })}>
                                         <option value='true'>Paga</option>
                                         <option value='false'>Não paga</option>
                                     </select>

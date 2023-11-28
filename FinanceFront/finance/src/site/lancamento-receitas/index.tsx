@@ -15,6 +15,7 @@ const dataReceita = {
 
 const LancamentoReceitasView = () => {
     const api = hookApi();
+
     const [receitas, setReceitas] = useState<Array<IReceita>>([]);
     const [novaReceita, setNovaReceita] = useState<IReceitaCreate>(dataReceita);
     const [editandoReceita, setEditandoReceita] = useState<IReceita | null>(null);
@@ -46,7 +47,12 @@ const LancamentoReceitasView = () => {
     const editarReceita = async () => {
         try {
             if (editandoReceita && editandoReceita.id) {
-                const response = await api.put<IReceita>(`api/receita/${editandoReceita.id}`, novaReceita);
+                const response = await api.put<IReceita>(
+                    `api/receita/${editandoReceita.id}`, 
+                    {
+                        nome: novaReceita.nome,
+                        valor: novaReceita.valor
+                    });
 
                 setReceitas((prev) => {
                     const props = prev.filter(w => w.id !== response.data.id);
@@ -62,6 +68,10 @@ const LancamentoReceitasView = () => {
         }
     };
 
+    const cancelarEdicao = () => {
+        setEditandoReceita(null);
+        setNovaReceita(dataReceita);
+    };
 
     const excluirReceita = async (receita: IReceita) => {
         try {
@@ -72,10 +82,6 @@ const LancamentoReceitasView = () => {
         }
     };
 
-    const cancelarEdicao = () => {
-        setEditandoReceita(null);
-        setNovaReceita(dataReceita);
-    };
 
     const getSomaReceitas = async () => {
         try {
@@ -91,23 +97,32 @@ const LancamentoReceitasView = () => {
 
     }, [receitas])
 
-    const handleChange = (e: any) => {
-        setNovaReceita({ ...novaReceita, nome: e.target.value })
+    useEffect(() => {
+        if (editandoReceita) {
+            setNovaReceita({
+                nome: editandoReceita.nome || '',
+                valor: editandoReceita.valor ? editandoReceita.valor.toString() : '',
+            });
+        }
+    }, [editandoReceita]);
+
+    const handleChangeNome = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNovaReceita({ ...novaReceita, nome: e.target.value });
     }
 
-    const handleSubmit = (e: any) => {
+    const handleChangeValor = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNovaReceita({ ...novaReceita, valor: e.target.value });
+    }
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (editandoReceita) {
-            editarReceita();
-        } else {
-            postReceita();
-        }
+                                if (editandoReceita) {
+                                    editarReceita();
+                                } else {
+                                    postReceita();
+                                }
     }
-
-    const navigate = useNavigate();
-    const toLancamentoDespesas = () => navigate('/lancamento-despesas');
-    const toLandingPage = () => navigate('/landing-page');
 
     return (
         <SiteLayout>
@@ -119,18 +134,8 @@ const LancamentoReceitasView = () => {
 
                         <form onSubmit={handleSubmit}>
                             <DisplayFlexUi flexDirection='column' gap={16}>
-                                <InputUi
-                                    label='Nome'
-                                    name='Nome'
-                                    type="text"
-                                    value={novaReceita.nome}
-                                    onChange={handleChange} />
-                                <InputUi
-                                    name='Valor'
-                                    label='Valor'
-                                    type="text"
-                                    value={novaReceita.valor}
-                                    onChange={handleChange} />
+                                <InputUi label='Nome'name='Nome' type="text" value={novaReceita.nome} onChange={handleChangeNome} />
+                                <InputUi name='Valor' label='Valor' type="text" value={novaReceita.valor} onChange={handleChangeValor} />
                                 <ButtonUi type="submit">{editandoReceita ? 'Editar Receita' : 'Adicionar Receita'}</ButtonUi>
                                 {editandoReceita && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
                             </DisplayFlexUi>

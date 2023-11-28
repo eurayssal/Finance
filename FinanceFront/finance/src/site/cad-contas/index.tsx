@@ -29,6 +29,10 @@ const CadContasView = () => {
         }
     };
 
+    useEffect(() => {
+        getContas();
+    }, []);
+
     const postConta = async () => {
         try {
             await api.post('/api/cadconta', novaConta);
@@ -80,10 +84,6 @@ const CadContasView = () => {
     }
 
     useEffect(() => {
-        getContas();
-    }, []);
-
-    useEffect(() => {
         if (editandoConta) {
             setNovaConta({
                 nome: editandoConta.nome || '',
@@ -93,12 +93,6 @@ const CadContasView = () => {
             })
         }
     }, [editandoConta])
-
-    const navigate = useNavigate();
-    const toLancamentoDespesas = () => navigate('/lancamento-despesas')
-    const toLancamentoReceitas = () => navigate('/lancamento-receitas')
-    const toCadContas = () => navigate('/cadastro-contas')
-    const toCadCartoes = () => navigate('/cadastro-cartoes')
 
     const handleChangeNome = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNovaConta({ ...novaConta, nome: e.target.value })
