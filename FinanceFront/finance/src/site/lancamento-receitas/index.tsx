@@ -48,7 +48,7 @@ const LancamentoReceitasView = () => {
         try {
             if (editandoReceita && editandoReceita.id) {
                 const response = await api.put<IReceita>(
-                    `api/receita/${editandoReceita.id}`, 
+                    `api/receita/${editandoReceita.id}`,
                     {
                         nome: novaReceita.nome,
                         valor: novaReceita.valor
@@ -111,18 +111,21 @@ const LancamentoReceitasView = () => {
     }
 
     const handleChangeValor = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNovaReceita({ ...novaReceita, valor: e.target.value });
+        setNovaReceita({ ...novaReceita, valor:  replaceBrMoney(e.target.value)});
     }
-
+    
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-                                if (editandoReceita) {
-                                    editarReceita();
-                                } else {
-                                    postReceita();
-                                }
+        
+        if (editandoReceita) {
+            editarReceita();
+        } else {
+            postReceita();
+        }
     }
+    
+    const moneyFormat = (valor: any) => valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const replaceBrMoney = (valor: string): string => valor.replace(',', '.');
 
     return (
         <SiteLayout>
@@ -134,7 +137,7 @@ const LancamentoReceitasView = () => {
 
                         <form onSubmit={handleSubmit}>
                             <DisplayFlexUi flexDirection='column' gap={16}>
-                                <InputUi label='Nome'name='Nome' type="text" value={novaReceita.nome} onChange={handleChangeNome} />
+                                <InputUi label='Nome' name='Nome' type="text" value={novaReceita.nome} onChange={handleChangeNome} />
                                 <InputUi name='Valor' label='Valor' type="text" value={novaReceita.valor} onChange={handleChangeValor} />
                                 <ButtonUi type="submit">{editandoReceita ? 'Editar Receita' : 'Adicionar Receita'}</ButtonUi>
                                 {editandoReceita && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
@@ -145,14 +148,14 @@ const LancamentoReceitasView = () => {
                         <ul>
                             {receitas.map((receita) => (
                                 <li key={receita.id}>
-                                    {receita.nome} - R$ {receita.valor}
+                                    {receita.nome} - R$ {moneyFormat(receita.valor)}
                                     <ButtonUi variant='secondary' onClick={() => setEditandoReceita(receita)}>Editar</ButtonUi>
                                     <ButtonUi variant='secondary' onClick={() => excluirReceita(receita)}>Excluir</ButtonUi>
                                 </li>
                             ))}
                         </ul>
 
-                        <h4>Soma receitas:</h4><p>R$ {somaReceita}</p>
+                        <h4>Soma receitas:</h4><p>R$ {somaReceita.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     </DisplayFlexUi>
                 </DisplayFlexUi>
             </DisplayFlexUi>
