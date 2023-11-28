@@ -19,13 +19,22 @@ namespace Finance.Controllers
         private readonly CadContaService _cadContaService;
         private readonly CadCartaoService _cadCartaoService;
 
+        private readonly IMongoCollection<Despesa> _despesaCollection;
         private readonly IMongoCollection<CadCartao> _cadCartaoCollection;
+        private readonly IMongoCollection<CadConta> _cadContaCollection;
 
-        public DespesaController(DespesaService despesaService, CadContaService cadContaService, CadCartaoService cadCartaoService)
+
+
+        public DespesaController(DespesaService despesaService,
+            CadContaService cadContaService, CadCartaoService cadCartaoService,
+            IMongoDatabase mongoDatabase)
         {
             _despesaService = despesaService;
             _cadContaService = cadContaService;
             _cadCartaoService = cadCartaoService;
+
+            _cadCartaoCollection = mongoDatabase.GetCollection<CadCartao>("cadcartao");
+            _cadContaCollection = mongoDatabase.GetCollection<CadConta>("cadconta");
         }
 
         [HttpGet]
@@ -57,30 +66,30 @@ namespace Finance.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(DespesaViewModel newDespesa)
         {
+            var cartao = await _cadCartaoCollection.Find(x => x.Id == newDespesa.ContaCartaoId).FirstOrDefaultAsync();
 
-            //await _cadcartaoCollection.Find(x => x.Id == newDespesa.ContaCartaoId).FirstOrDefaultAsync(cancellationToken);
-            //var isCartao = await _cadcartaoCollection.Find(x => x.Id == newDespesa.ContaCartaoId).FirstOrDefaultAsync(cancellationToken);
-
-            //var conta = await _cadcontaCollection.Find(x => x.Id == newDespesa.ContaCartaoId).FirstOrDefaultAsync(cancellationToken);
-            //await _despesaService.CreateAsync(newDespesa, isCartao, conta);
-
-            //return Ok();
-
-            var conta = await _cadContaService.GetAsync(newDespesa.ContaId);
-            var cartao = await _cadCartaoService.GetAsync(newDespesa.CartaoId);
-            await _despesaService.CreateAsync(newDespesa, conta, cartao);
-            return Ok();
-        }
-
-        [HttpPut("{id:length(24)}")]
-        public async Task<IActionResult> Update(string id, DespesaViewModel despesaViewModel)
-        {
-            var conta = await _cadContaService.GetAsync(despesaViewModel.ContaId);
-            var cartao = await _cadCartaoService.GetAsync(despesaViewModel.CartaoId);
-            await _despesaService.UpdateAsync(id, despesaViewModel, conta, cartao);
+            if (cartao == null)
+            {
+                var conta = await _cadContaCollection.Find(x => x.Id == newDespesa.ContaCartaoId).FirstOrDefaultAsync();
+                await _despesaService.CreateAsync(newDespesa, conta, null);
+            }
+            else
+            {
+                await _despesaService.CreateAsync(newDespesa, null, cartao);
+            }
 
             return Ok();
         }
+
+        //[HttpPut("{id:length(24)}")]
+        //public async Task<IActionResult> Update(string id, DespesaViewModel despesaViewModel)
+        //{
+        //    var conta = await _cadContaService.GetAsync(despesaViewModel.ContaId);
+        //    var cartao = await _cadCartaoService.GetAsync(despesaViewModel.CartaoId);
+        //    await _despesaService.UpdateAsync(id, despesaViewModel, conta, cartao);
+
+        //    return Ok();
+        //}
 
         [HttpDelete("{id:length(24)}")]
         public async Task<IActionResult> DeleteDespesa(string id)

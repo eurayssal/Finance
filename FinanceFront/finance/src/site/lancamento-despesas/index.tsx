@@ -11,7 +11,7 @@ const dataDespesa = {
     nome: '',
     valor: '',
     data: '',
-    contaId: '',
+    contaCartaoId: '',
     status: true
 }
 
@@ -65,31 +65,31 @@ const LancamentoDespesasView = () => {
         }
     };
 
-    const editarDespesa = async () => {
-        try {
-            if (editandoDespesa && editandoDespesa.id) {
-                const response = await api.put<IDespesa>(
-                    `api/despesa/${editandoDespesa.id}`,
-                    {
-                        nome: novaDespesa.nome,
-                        valor: parseFloat(novaDespesa.valor),
-                        data: novaDespesa.data ? new Date(novaDespesa.data) : null,
-                        contaId: novaDespesa.contaId
-                    });
+    // const editarDespesa = async () => {
+    //     try {
+    //         if (editandoDespesa && editandoDespesa.id) {
+    //             const response = await api.put<IDespesa>(
+    //                 `api/despesa/${editandoDespesa.id}`,
+    //                 {
+    //                     nome: novaDespesa.nome,
+    //                     valor: parseFloat(novaDespesa.valor),
+    //                     data: novaDespesa.data ? new Date(novaDespesa.data) : null,
+    //                     contaCartaoId: novaDespesa.contaCartaoId
+    //                 });
 
-                setDespesas((prev) => {
-                    const props = prev.filter((w) => w.id !== response.data.id);
-                    return [...props, response.data];
-                });
+    //             setDespesas((prev) => {
+    //                 const props = prev.filter((w) => w.id !== response.data.id);
+    //                 return [...props, response.data];
+    //             });
 
-                setEditandoDespesa(null);
-                setNovaDespesa(dataDespesa);
-                getDespesas();
-            }
-        } catch (error) {
-            console.log('Erro ao editar despesa: ', error);
-        }
-    };
+    //             setEditandoDespesa(null);
+    //             setNovaDespesa(dataDespesa);
+    //             getDespesas();
+    //         }
+    //     } catch (error) {
+    //         console.log('Erro ao editar despesa: ', error);
+    //     }
+    // };
 
     const cancelarEdicao = () => {
         setEditandoDespesa(null);
@@ -130,19 +130,43 @@ const LancamentoDespesasView = () => {
         getCartoes();
     }, []);
 
-    useEffect(() => {
-        if (editandoDespesa) {
-            setNovaDespesa({
-                nome: editandoDespesa.nome || '',
-                valor: editandoDespesa.valor ? editandoDespesa.valor.toString() : '',
-                data: editandoDespesa.data
-                    ? new Date(editandoDespesa.data).toISOString().split('T')[0]
-                    : '',
-                contaId: editandoDespesa.contaId || '',
-                status: editandoDespesa.status,
-            });
+    const editarDespesa = async () => {
+        try {
+            if (editandoDespesa && editandoDespesa.id) {
+                const payload: IDespesa = {
+                    id: editandoDespesa.id,
+                    nome: novaDespesa.nome,
+                    valor: parseFloat(novaDespesa.valor),
+                    data: novaDespesa.data,
+                    status: novaDespesa.status,
+                    cartaoId: editandoDespesa.cartaoId,
+                    cartaoName: editandoDespesa.cartaoName,
+                    contaId: editandoDespesa.contaId,
+                    contaName: editandoDespesa.contaName
+                };
+    
+                const response = await api.put<IDespesa>(
+                    `api/despesa/${editandoDespesa.id}`,
+                    payload
+                );
+    
+                setDespesas((prev) => {
+                    const updatedDespesas = prev.map((despesa) =>
+                        despesa.id === editandoDespesa.id ? response.data : despesa
+                    );
+                    return updatedDespesas;
+                });
+    
+                setEditandoDespesa(null);
+                setNovaDespesa(dataDespesa);
+                getDespesas();
+
+            }
+        } catch (error) {
+            console.log('Erro ao editar despesa: ', error);
         }
-    }, [editandoDespesa]);
+    };
+
 
     useEffect(() => {
         if (despesas.length) { getSomaDespesas() }
@@ -161,7 +185,7 @@ const LancamentoDespesasView = () => {
     }
 
     const handleChangeConta = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setNovaDespesa({ ...novaDespesa, contaId: e.target.value })
+        setNovaDespesa({ ...novaDespesa, contaCartaoId: e.target.value })
     }
 
     return (
@@ -186,7 +210,7 @@ const LancamentoDespesasView = () => {
                                 <InputUi label='Valor' name='Valor' type="text" value={novaDespesa.valor} onChange={handleChangeValor} />
                                 <InputUi name='Data' label='Data' type="date" value={novaDespesa.data} onChange={handleChangeData} />
                                 <label>Conta:
-                                    <select value={novaDespesa.contaId} onChange={handleChangeConta}>
+                                    <select value={novaDespesa.contaCartaoId} onChange={handleChangeConta}>
                                         <option value="">Selecione uma conta ou cartão</option>
                                         <optgroup label="Contas">
                                             {contas.filter((conta) => { return conta.atividade === true && conta.tipo === 'conta' })

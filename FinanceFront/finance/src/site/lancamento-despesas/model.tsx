@@ -15,7 +15,7 @@ export interface IDespesaCreate {
     valor: string;
     data: string;
     status: boolean;
-    contaId: string;
+    contaCartaoId: string;
 }
 
 export interface IConta {

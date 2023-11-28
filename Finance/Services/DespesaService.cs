@@ -48,27 +48,27 @@ namespace Finance.Services
 
             if(cadCartao == null)
             {
-                despesa.ContaId = cadCartao.Id;
-                despesa.CartaoName = cadCartao.Nome;
+                despesa.ContaId = cadConta.Id;
+                despesa.CartaoName = cadConta.Nome;
             }
 
             await _despesaCollection.InsertOneAsync(despesa);
         }
 
-        public async Task UpdateAsync(string id, DespesaViewModel despesaViewModel, CadConta cadConta, CadCartao cadCartao)
-        {
-            var despesa = await GetAsync(id);
+        //public async Task UpdateAsync(string id, DespesaViewModel despesaViewModel, CadConta cadConta, CadCartao cadCartao)
+        //{
+        //    var despesa = await GetAsync(id);
 
-            despesa.Nome = despesaViewModel.Nome;
-            despesa.Valor = despesaViewModel.Valor;
-            despesa.Data = despesaViewModel.Data;
-            despesa.ContaId = despesaViewModel.ContaId;
-            despesa.ContaName = cadConta.Nome;
-            despesa.CartaoName= cadCartao.Nome;
-            despesa.CartaoId = cadCartao.Id;
+        //    despesa.Nome = despesaViewModel.Nome;
+        //    despesa.Valor = despesaViewModel.Valor;
+        //    despesa.Data = despesaViewModel.Data;
+        //    despesa.ContaId = despesaViewModel.ContaId;
+        //    despesa.ContaName = cadConta.Nome;
+        //    despesa.CartaoName= cadCartao.Nome;
+        //    despesa.CartaoId = cadCartao.Id;
 
-            await _despesaCollection.ReplaceOneAsync(x => x.Id == id, despesa);
-        }
+        //    await _despesaCollection.ReplaceOneAsync(x => x.Id == id, despesa);
+        //}
 
         public async Task RemoveAsync(string id) =>
             await _despesaCollection.DeleteOneAsync(x => x.Id == id);
