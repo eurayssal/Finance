@@ -2,6 +2,7 @@ using Finance.Models;
 using Finance.Services;
 using Finance.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -17,6 +18,8 @@ namespace Finance.Controllers
         private readonly DespesaService _despesaService;
         private readonly CadContaService _cadContaService;
         private readonly CadCartaoService _cadCartaoService;
+
+        private readonly IMongoCollection<CadCartao> _cadCartaoCollection;
 
         public DespesaController(DespesaService despesaService, CadContaService cadContaService, CadCartaoService cadCartaoService)
         {
@@ -54,6 +57,15 @@ namespace Finance.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(DespesaViewModel newDespesa)
         {
+
+            //await _cadcartaoCollection.Find(x => x.Id == newDespesa.ContaCartaoId).FirstOrDefaultAsync(cancellationToken);
+            //var isCartao = await _cadcartaoCollection.Find(x => x.Id == newDespesa.ContaCartaoId).FirstOrDefaultAsync(cancellationToken);
+
+            //var conta = await _cadcontaCollection.Find(x => x.Id == newDespesa.ContaCartaoId).FirstOrDefaultAsync(cancellationToken);
+            //await _despesaService.CreateAsync(newDespesa, isCartao, conta);
+
+            //return Ok();
+
             var conta = await _cadContaService.GetAsync(newDespesa.ContaId);
             var cartao = await _cadCartaoService.GetAsync(newDespesa.CartaoId);
             await _despesaService.CreateAsync(newDespesa, conta, cartao);

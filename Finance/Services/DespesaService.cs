@@ -36,10 +36,21 @@ namespace Finance.Services
             despesa.Data = newDespesa.Data;
             despesa.Valor = newDespesa.Valor;
             despesa.Status = newDespesa.Status;
-            despesa.ContaId = cadConta.Id;
-            despesa.CartaoId = cadCartao.Id;
-            despesa.ContaName = cadConta.Nome;
-            despesa.CartaoName = cadCartao.Nome;
+
+            //Se eu selecionei uma conta não é um cartão.
+            //Se meu cartão está null o id que eu recebo eu lanço ele no conta
+
+            if(cadConta == null)
+            {
+                despesa.CartaoId = cadCartao.Id;
+                despesa.CartaoName = cadCartao.Nome;
+            }
+
+            if(cadCartao == null)
+            {
+                despesa.ContaId = cadCartao.Id;
+                despesa.CartaoName = cadCartao.Nome;
+            }
 
             await _despesaCollection.InsertOneAsync(despesa);
         }
