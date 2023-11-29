@@ -40,6 +40,33 @@ namespace Finance.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id:length(24)}")]
+        public async Task<IActionResult> UpdateCartao(string id, CadCartao updateCadCartao)
+        {
+            var cartao = await _cadCartaoService.GetAsync(id);
+
+            if(cartao == null)
+            {
+                return NoContent();
+            }
+
+            cartao.Nome = updateCadCartao.Nome;
+            cartao.DiaFechamento = updateCadCartao.DiaFechamento;
+            cartao.DiaVencimento = updateCadCartao.DiaVencimento;
+            cartao.Atividade = updateCadCartao.Atividade;
+
+            await _cadCartaoService.UpdateAsync(id, cartao);
+
+            return Ok(new
+            {
+                cartao.Id,
+                cartao.Nome,
+                cartao.DiaFechamento,
+                cartao.DiaVencimento,
+                cartao.Atividade
+            });
+            
+        }
         //[HttpGet("soma/{cartaoId:length(24)}")]
         //public async Task<IActionResult> GetSomaFatura (string cartaoId, CancellationToken cancellationToken)
         //{

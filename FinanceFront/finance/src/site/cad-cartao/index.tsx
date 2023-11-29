@@ -6,7 +6,7 @@ import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 import SiteLayout from '../_layout';
 import InputUi from '../../components/form/inputUi';
 
-    var dataCartao = {
+    const dataCartao = {
         nome: '',
         tipo: 'cartao',
         valorFatura: '0',
@@ -49,10 +49,10 @@ const CadCartaoView: React.FC = () => {
         try {
             if (editandoCartao && editandoCartao.id) {
                 const response = await api.put<ICadCartao>(
-                    `api/despesa/${editandoCartao.id}`,
+                    `api/cadcartao/${editandoCartao.id}`,
                     {
                         nome: novoCartao.nome,
-                        valorFatura: parseFloat(novoCartao.valorFatura),
+                        // valorFatura: parseFloat(novoCartao.valorFatura),
                         diaFechamento: novoCartao.diaFechamento ? new Date(novoCartao.diaFechamento) : null,
                         diaVencimento: novoCartao.diaVencimento ? new Date(novoCartao.diaVencimento) : null,
                         atividade: novoCartao.atividade,
@@ -111,7 +111,7 @@ const CadCartaoView: React.FC = () => {
                 tipo: editandoCartao.tipo || '',
             })
         }
-    }, [])
+    }, [editandoCartao])
 
     return (
         <SiteLayout>

@@ -30,6 +30,8 @@ namespace Finance.Services
         {
             await _cadCartaoCollection.InsertOneAsync(newCadCartao);
         }
+        public async Task UpdateAsync(string id, CadCartao updatedCadCartao) =>
+      await _cadCartaoCollection.ReplaceOneAsync(x => x.Id == id, updatedCadCartao);
 
         public async Task RemoveAsync(string id) =>
             await _cadCartaoCollection.DeleteOneAsync(x => x.Id == id);
