@@ -27,6 +27,10 @@ namespace Finance.Services
         public async Task<CadConta?> GetAsync(string id) =>
             await _cadContaCollection.Find(y => y.Id == id).FirstOrDefaultAsync();
 
+        public async Task UpdateAsync(string id, CadConta updateCadConta)
+        {
+            await _cadContaCollection.ReplaceOneAsync(x => x.Id == id, updateCadConta);
+        }
         public async Task CreateAsync(CadConta newCadConta)
         {
             await _cadContaCollection.InsertOneAsync(newCadConta);

@@ -71,6 +71,11 @@ const CadContasView = () => {
         }
     }
 
+    const cancelarEdicao = () => {
+        setEditandoConta(null);
+        setNovaConta(dataConta);
+    }
+
     const excluirConta = async (conta: ICadConta) => {
         try {
             await api.delete(`/api/cadconta/${conta.id}`);
@@ -79,11 +84,6 @@ const CadContasView = () => {
             console.error('Erro ao excluir conta: ', error);
         }
     };
-
-    const cancelarEdicao = () => {
-        setEditandoConta(null);
-        setNovaConta(dataConta);
-    }
 
     useEffect(() => {
         if (editandoConta) {

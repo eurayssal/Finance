@@ -30,7 +30,6 @@ namespace Finance.Controllers
             return CreatedAtAction(nameof(GetCartao), new { id = newCadCartao.Id }, newCadCartao);
         }
 
-
         [HttpDelete("{id:length(24)}")]
         public async Task<IActionResult> DeleteCartao(string id)
         {

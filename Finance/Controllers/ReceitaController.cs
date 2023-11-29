@@ -10,8 +10,11 @@ namespace Finance.Controllers
     {
         private readonly ReceitaService _receitaService;
         
-        public ReceitaController(ReceitaService receitaService) => 
+        public ReceitaController(ReceitaService receitaService)
+        {
             _receitaService = receitaService;
+
+        }
 
         [HttpGet]
         public async Task<List<Receita>> Get() =>
