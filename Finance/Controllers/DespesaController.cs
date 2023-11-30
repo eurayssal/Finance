@@ -46,7 +46,7 @@ namespace Finance.Controllers
                 s.CartaoId,
                 s.CartaoName,
                 s.Status,
-                Valor = s.Valor.ToString("C", new CultureInfo("pt-BR")),
+                s.Valor,
                 s.Data,
             }).ToList());
         }
@@ -110,6 +110,7 @@ namespace Finance.Controllers
                     .Where(w => w.Id == despesaView.ContaCartaoId)
                     .SingleAsync();
             }
+
 
             await _despesaService.UpdateAsync(id: id,
                 despesaView: despesaView,

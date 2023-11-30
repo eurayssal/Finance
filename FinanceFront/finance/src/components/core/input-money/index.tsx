@@ -14,7 +14,7 @@ const InputMoneyUi: React.FC<IMoneyInputProps> = (props) => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
         const formattedValue = maskMoney(inputValue);
-        const numericValue = formattedValue.replace('R$ ', '').replace(',', '.');
+        const numericValue = formattedValue.replace(',', '.');
         onChange(numericValue);
     };
 
@@ -30,9 +30,14 @@ const InputMoneyUi: React.FC<IMoneyInputProps> = (props) => {
 
     return (<jss.ContainerJss name={`container-${id}`} {...containerProps} >
         <jss.Label>{label}</jss.Label>
-        <jss.Input value={maskMoney(value)} key={id} name={name}
-            onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur}
-            isFocused={isFocused} placeholder="R$ 00,00" />
+        <jss.Input
+        value={maskMoney(value)}
+        key={id} name={name}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        isFocused={isFocused}
+        placeholder="R$ 00,00" />
     </jss.ContainerJss>);
 };
 

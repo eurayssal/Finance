@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
-import { ICartao, IConta, IDespesa, IDespesaCreate } from './model';
+import { ICartao, IConta, IDespesa, IDespesaCreateInput, IDespesaCreateViewModel } from './model';
 import hookApi from '../../hooks/api';
 import ButtonUi from '../../components/core/buttons/buttons';
 import DisplayFlexUi from '../../components/core/display/display-flex.ui';
@@ -22,8 +22,8 @@ const LancamentoDespesasView = () => {
     const [contas, setContas] = useState<Array<IConta>>([]);
     const [cartoes, setCartoes] = useState<Array<ICartao>>([]);
     const [despesas, setDespesas] = useState<Array<IDespesa>>([]);
-    const [updatedDespesas, setUpdatedespesas] = useState<Array<IDespesaCreate>>([])
-    const [novaDespesa, setNovaDespesa] = useState<IDespesaCreate>(dataDespesa);
+    const [novaDespesa, setNovaDespesa] = useState<IDespesaCreateInput>(dataDespesa);
+    const [updateViewModel, setUpdateViewModel] = useState<Array<IDespesaCreateViewModel>>([])
     const [editandoDespesa, setEditandoDespesa] = useState<IDespesa | null>(null);
     const [somaDespesas, setSomaDespesas] = useState<number>(0);
 
@@ -56,34 +56,6 @@ const LancamentoDespesasView = () => {
             console.error('Erro ao obter cartões: ', error);
         }
     }
-
-    
-    // const editarDespesa = async () => {
-    //     try {
-    //         if (editandoDespesa && editandoDespesa.id) {
-    //             const response = await api.put<IDespesa>(
-        //                 `api/despesa/${editandoDespesa.id}`,
-    //                 {
-    //                     nome: novaDespesa.nome,
-    //                     valor: parseFloat(novaDespesa.valor),
-    //                     data: novaDespesa.data ? new Date(novaDespesa.data) : null,
-    //                     contaCartaoId: novaDespesa.contaCartaoId
-    //                 });
-    
-    //             setDespesas((prev) => {
-        //                 const props = prev.filter((w) => w.id !== response.data.id);
-    //                 return [...props, response.data];
-    //             });
-  
-
-    //             setEditandoDespesa(null);
-    //             setNovaDespesa(dataDespesa);
-    //             getDespesas();
-    //         }
-    //     } catch (error) {
-    //         console.log('Erro ao editar despesa: ', error);
-    //     }
-    // };
 
     const cancelarEdicao = () => {
         setEditandoDespesa(null);
@@ -123,7 +95,7 @@ const LancamentoDespesasView = () => {
         getContas();
         getCartoes();
     }, []);
-    
+
     const postDespesa = async () => {
         try {
             await api.post('api/despesa', novaDespesa);
@@ -134,85 +106,43 @@ const LancamentoDespesasView = () => {
         }
     };
 
-    const editarDespesa = async () => {
-        try {
-            if (editandoDespesa && editandoDespesa.id) {
-                
-                    const idEdit = novaDespesa.contaCartaoId;
-                
-                    const isCartao = cartoes.find((cartao) => cartao.id === idEdit);
-                    const isConta = cartoes.find((conta) => conta.id === idEdit);
-
-                    if (isCartao || isConta) {
-                        const id = isConta ? isConta.id : isCartao?.id;
-
-    //                     const contaEncontrada = contas.find((conta) => conta.id === id);
-    // const cartaoEncontrado = cartoes.find((cartao) => cartao.id === id);
-
-
-                       debugger
-                        const payload: IDespesaCreate = {
-                            nome: novaDespesa.nome,
-                        valor: novaDespesa.valor,
-                        data: novaDespesa.data,
-                        status: novaDespesa.status,
-                        contaCartaoId: id || '',
-                        };
-
-                        const response = await api.put<IDespesaCreate>(
-                            `api/despesa/${editandoDespesa.id}`,
-                            payload
-                        );
-
-                        setUpdatedespesas((prev) => {
-                            const updatedDespesas = prev.map((despesa) =>
-                                despesa.contaCartaoId === editandoDespesa.id ? response.data : despesa
-                            );
-                            return updatedDespesas;
-                        });
-                    }
-
-
-    
-    
-    
-                setEditandoDespesa(null);
-                setNovaDespesa(dataDespesa);
-                getDespesas();
-
-            }
-        } catch (error) {
-            console.log('Erro ao editar despesa: ', error);
-        }
-    };
-
     // const editarDespesa = async () => {
     //     try {
     //         if (editandoDespesa && editandoDespesa.id) {
-                
-    
-    //             const response = await api.put<IDespesaCreate>(
-    //                 `api/despesa/${editandoDespesa.id}`,
-    //                 {
-    //                     id: editandoDespesa.id,
-    //                     nome: novaDespesa.nome,
-    //                     valor: parseFloat(novaDespesa.valor),
+
+    //             const idEdit = novaDespesa.contaCartaoId;
+    //             const isCartao = cartoes.find((cartao) => cartao.id === idEdit);
+    //             const isConta = cartoes.find((conta) => conta.id === idEdit);
+
+    //             if (isCartao || isConta) {
+    //                 const id = isConta ? isConta.id : isCartao?.id;
+
+    //                 const contaEncontrada = contas.find((conta) => conta.id === id);
+    //                 const cartaoEncontrado = cartoes.find((cartao) => cartao.id === id);
+
+    //                 const nome = contaEncontrada ? contaEncontrada.nome : (cartaoEncontrado ? cartaoEncontrado.nome : '');
+
+    //                 const payload: IDespesaCreate = {
+    //                     nome: nome,
+    //                     valor: novaDespesa.valor,
     //                     data: novaDespesa.data,
     //                     status: novaDespesa.status,
-    //                     cartaoId: editandoDespesa.cartaoId,
-    //                     cartaoName: editandoDespesa.cartaoName,
-    //                     contaId: editandoDespesa.contaId,
-    //                     contaName: editandoDespesa.contaName
+    //                     contaCartaoId: id || '',
+    //                     };
+
+    //                     const response = await api.put<IDespesaCreate>(
+    //                         `api/despesa/${editandoDespesa.id}`,
+    //                         payload
+    //                     );
+
+    //                     setUpdatedespesas((prev) => {
+    //                         const updatedDespesas = prev.map((despesa) =>
+    //                             despesa.contaCartaoId === editandoDespesa.id ? response.data : despesa
+    //                         );
+    //                         return updatedDespesas;
+    //                     });
     //                 }
-    //             );
-    
-    //             setDespesas((prev) => {
-    //                 const updatedDespesas = prev.map((despesa) =>
-    //                     despesa.id === editandoDespesa.id ? response.data : despesa
-    //                 );
-    //                 return updatedDespesas;
-    //             });
-    
+
     //             setEditandoDespesa(null);
     //             setNovaDespesa(dataDespesa);
     //             getDespesas();
@@ -223,22 +153,64 @@ const LancamentoDespesasView = () => {
     //     }
     // };
 
+    const editarDespesa = async () => {
+        try {
+            if (editandoDespesa && editandoDespesa.id) {
+                const idEdit = novaDespesa.contaCartaoId;
+                const isCartao = cartoes.find((cartao) => cartao.id === idEdit);
+                const isConta = contas.find((conta) => conta.id === idEdit);
+
+
+                const id = isConta ? isConta.id : isCartao?.id;
+                // const contaEncontrada = contas.find((conta) => conta.id === id);
+                // const cartaoEncontrado = cartoes.find((cartao) => cartao.id === id);
+
+                // const nome = contaEncontrada ? contaEncontrada.nome : (cartaoEncontrado ? cartaoEncontrado.nome : '');
+
+                const payload: IDespesaCreateViewModel = {
+                    nome: novaDespesa.nome,
+                    valor: parseFloat(novaDespesa.valor),
+                    data: novaDespesa.data,
+                    status: novaDespesa.status,
+                    contaCartaoId: id || '',
+                };
+
+                const response = await api.put<IDespesaCreateViewModel>(
+                    `api/despesa/${editandoDespesa.id}`,
+                    payload
+                );
+
+                setUpdateViewModel((prev) => {
+                    const updatedDespesas = prev.map((despesa) =>
+                        despesa.contaCartaoId === editandoDespesa.id ? response.data : despesa
+                    );
+                    return updatedDespesas;
+                });
+
+                setEditandoDespesa(null);
+                setNovaDespesa(dataDespesa);
+                getDespesas();
+            }
+        } catch (error) {
+            console.log('Erro ao editar despesa: ', error);
+        }
+    };
+
     useEffect(() => {
+
+
         if (editandoDespesa) {
             const isConta = editandoDespesa.contaId !== null;
             const isCartao = editandoDespesa.cartaoId !== null;
 
             if (isCartao || isConta) {
                 const id = isConta ? editandoDespesa.contaId : editandoDespesa.cartaoId
-               
-                const contaEncontrada = contas.find((conta) => conta.id === id);
-            const cartaoEncontrado = cartoes.find((cartao) => cartao.id === id);
 
-            const nome = contaEncontrada ? contaEncontrada.nome : (cartaoEncontrado ? cartaoEncontrado.nome : '');
-
+                console.log('editandoDespesa.valor', editandoDespesa.valor)
+                //O editandoDespesa.valor esta com R$
 
                 setNovaDespesa({
-                    nome: nome,
+                    nome: editandoDespesa.nome,
                     contaCartaoId: id,
                     data: editandoDespesa.data ? new Date(editandoDespesa.data).toISOString().split('T')[0] : '',
                     status: editandoDespesa.status,
@@ -331,7 +303,7 @@ const LancamentoDespesasView = () => {
                                 <li key={despesa.id}>
                                     {despesa.nome} - R$ {despesa.valor}
                                     - Data: {getFormattedDate(despesa.data)}
-                                    - Conta: {despesa.contaName}
+                                    - Conta: {despesa.contaName ? despesa.contaName : despesa.cartaoName}
                                     - Status: {despesa.status ? 'Paga' : 'Não paga'}
                                     <DisplayFlexUi>
                                         <ButtonUi variant='secondary' onClick={() => setEditandoDespesa(despesa)}>Editar</ButtonUi>

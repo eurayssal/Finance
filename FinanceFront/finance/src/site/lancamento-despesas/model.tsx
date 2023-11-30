@@ -10,9 +10,17 @@ export interface IDespesa {
     contaName: string
 }
 
-export interface IDespesaCreate {
+export interface IDespesaCreateInput {
     nome: string;
     valor: string;
+    data: string;
+    status: boolean;
+    contaCartaoId: string;
+}
+
+export interface IDespesaCreateViewModel {
+    nome: string;
+    valor: number;
     data: string;
     status: boolean;
     contaCartaoId: string;

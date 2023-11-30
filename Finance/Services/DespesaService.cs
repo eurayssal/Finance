@@ -65,17 +65,29 @@ namespace Finance.Services
             despesa.Nome = despesaView.Nome;
             despesa.Valor = despesaView.Valor;
             despesa.Data = despesaView.Data;
+            despesa.Status = despesaView.Status;
+
+
+            //Se antes eu tinha cart 
 
             if (isCartao)
             {
                 despesa.CartaoId = cadCartao.Id;
                 despesa.CartaoName = cadCartao.Nome;
+
+                despesa.ContaId = null;
+                despesa.ContaName = null;
             }
             else
             {
                 despesa.ContaId = cadConta.Id;
                 despesa.ContaName = cadConta.Nome;
+
+                despesa.CartaoId = null;
+                despesa.CartaoName = null;
             }
+
+            
 
             await _despesaCollection.ReplaceOneAsync(x => x.Id == id, despesa);
         }
