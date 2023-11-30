@@ -16,5 +16,9 @@ namespace Finance.Models
         public decimal Saldo { get; set; }
         public string Tipo { get; set; }
         public bool Atividade { get; set; }
+
+        public CadConta()
+        {
+        }
     }
 }

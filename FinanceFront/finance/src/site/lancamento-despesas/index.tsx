@@ -22,6 +22,7 @@ const LancamentoDespesasView = () => {
     const [contas, setContas] = useState<Array<IConta>>([]);
     const [cartoes, setCartoes] = useState<Array<ICartao>>([]);
     const [despesas, setDespesas] = useState<Array<IDespesa>>([]);
+    const [updatedDespesas, setUpdatedespesas] = useState<Array<IDespesaCreate>>([])
     const [novaDespesa, setNovaDespesa] = useState<IDespesaCreate>(dataDespesa);
     const [editandoDespesa, setEditandoDespesa] = useState<IDespesa | null>(null);
     const [somaDespesas, setSomaDespesas] = useState<number>(0);
@@ -56,32 +57,24 @@ const LancamentoDespesasView = () => {
         }
     }
 
-    const postDespesa = async () => {
-        try {
-            await api.post('api/despesa', novaDespesa);
-            setNovaDespesa(dataDespesa);
-            getDespesas();
-        } catch (error) {
-            console.log('Erro ao adicionar despesa: ', error);
-        }
-    };
-
+    
     // const editarDespesa = async () => {
     //     try {
     //         if (editandoDespesa && editandoDespesa.id) {
     //             const response = await api.put<IDespesa>(
-    //                 `api/despesa/${editandoDespesa.id}`,
+        //                 `api/despesa/${editandoDespesa.id}`,
     //                 {
     //                     nome: novaDespesa.nome,
     //                     valor: parseFloat(novaDespesa.valor),
     //                     data: novaDespesa.data ? new Date(novaDespesa.data) : null,
     //                     contaCartaoId: novaDespesa.contaCartaoId
     //                 });
-
+    
     //             setDespesas((prev) => {
-    //                 const props = prev.filter((w) => w.id !== response.data.id);
+        //                 const props = prev.filter((w) => w.id !== response.data.id);
     //                 return [...props, response.data];
     //             });
+  
 
     //             setEditandoDespesa(null);
     //             setNovaDespesa(dataDespesa);
@@ -130,33 +123,58 @@ const LancamentoDespesasView = () => {
         getContas();
         getCartoes();
     }, []);
+    
+    const postDespesa = async () => {
+        try {
+            await api.post('api/despesa', novaDespesa);
+            setNovaDespesa(dataDespesa);
+            getDespesas();
+        } catch (error) {
+            console.log('Erro ao adicionar despesa: ', error);
+        }
+    };
 
     const editarDespesa = async () => {
         try {
             if (editandoDespesa && editandoDespesa.id) {
-                const payload: IDespesa = {
-                    id: editandoDespesa.id,
-                    nome: novaDespesa.nome,
-                    valor: parseFloat(novaDespesa.valor),
-                    data: novaDespesa.data,
-                    status: novaDespesa.status,
-                    cartaoId: editandoDespesa.cartaoId,
-                    cartaoName: editandoDespesa.cartaoName,
-                    contaId: editandoDespesa.contaId,
-                    contaName: editandoDespesa.contaName
-                };
+                
+                    const idEdit = novaDespesa.contaCartaoId;
+                
+                    const isCartao = cartoes.find((cartao) => cartao.id === idEdit);
+                    const isConta = cartoes.find((conta) => conta.id === idEdit);
+
+                    if (isCartao || isConta) {
+                        const id = isConta ? isConta.id : isCartao?.id;
+
+    //                     const contaEncontrada = contas.find((conta) => conta.id === id);
+    // const cartaoEncontrado = cartoes.find((cartao) => cartao.id === id);
+
+
+                       debugger
+                        const payload: IDespesaCreate = {
+                            nome: novaDespesa.nome,
+                        valor: novaDespesa.valor,
+                        data: novaDespesa.data,
+                        status: novaDespesa.status,
+                        contaCartaoId: id || '',
+                        };
+
+                        const response = await api.put<IDespesaCreate>(
+                            `api/despesa/${editandoDespesa.id}`,
+                            payload
+                        );
+
+                        setUpdatedespesas((prev) => {
+                            const updatedDespesas = prev.map((despesa) =>
+                                despesa.contaCartaoId === editandoDespesa.id ? response.data : despesa
+                            );
+                            return updatedDespesas;
+                        });
+                    }
+
+
     
-                const response = await api.put<IDespesa>(
-                    `api/despesa/${editandoDespesa.id}`,
-                    payload
-                );
     
-                setDespesas((prev) => {
-                    const updatedDespesas = prev.map((despesa) =>
-                        despesa.id === editandoDespesa.id ? response.data : despesa
-                    );
-                    return updatedDespesas;
-                });
     
                 setEditandoDespesa(null);
                 setNovaDespesa(dataDespesa);
@@ -167,6 +185,69 @@ const LancamentoDespesasView = () => {
             console.log('Erro ao editar despesa: ', error);
         }
     };
+
+    // const editarDespesa = async () => {
+    //     try {
+    //         if (editandoDespesa && editandoDespesa.id) {
+                
+    
+    //             const response = await api.put<IDespesaCreate>(
+    //                 `api/despesa/${editandoDespesa.id}`,
+    //                 {
+    //                     id: editandoDespesa.id,
+    //                     nome: novaDespesa.nome,
+    //                     valor: parseFloat(novaDespesa.valor),
+    //                     data: novaDespesa.data,
+    //                     status: novaDespesa.status,
+    //                     cartaoId: editandoDespesa.cartaoId,
+    //                     cartaoName: editandoDespesa.cartaoName,
+    //                     contaId: editandoDespesa.contaId,
+    //                     contaName: editandoDespesa.contaName
+    //                 }
+    //             );
+    
+    //             setDespesas((prev) => {
+    //                 const updatedDespesas = prev.map((despesa) =>
+    //                     despesa.id === editandoDespesa.id ? response.data : despesa
+    //                 );
+    //                 return updatedDespesas;
+    //             });
+    
+    //             setEditandoDespesa(null);
+    //             setNovaDespesa(dataDespesa);
+    //             getDespesas();
+
+    //         }
+    //     } catch (error) {
+    //         console.log('Erro ao editar despesa: ', error);
+    //     }
+    // };
+
+    useEffect(() => {
+        if (editandoDespesa) {
+            const isConta = editandoDespesa.contaId !== null;
+            const isCartao = editandoDespesa.cartaoId !== null;
+
+            if (isCartao || isConta) {
+                const id = isConta ? editandoDespesa.contaId : editandoDespesa.cartaoId
+               
+                const contaEncontrada = contas.find((conta) => conta.id === id);
+            const cartaoEncontrado = cartoes.find((cartao) => cartao.id === id);
+
+            const nome = contaEncontrada ? contaEncontrada.nome : (cartaoEncontrado ? cartaoEncontrado.nome : '');
+
+
+                setNovaDespesa({
+                    nome: nome,
+                    contaCartaoId: id,
+                    data: editandoDespesa.data ? new Date(editandoDespesa.data).toISOString().split('T')[0] : '',
+                    status: editandoDespesa.status,
+                    valor: editandoDespesa.valor ? editandoDespesa.valor.toString() : '',
+                })
+            }
+        }
+
+    }, [editandoDespesa])
 
 
     useEffect(() => {

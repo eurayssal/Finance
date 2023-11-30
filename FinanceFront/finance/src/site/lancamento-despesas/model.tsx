@@ -19,11 +19,15 @@ export interface IDespesaCreate {
 }
 
 export interface IConta {
+    id: string;
     tipo: string;
     atividade: boolean;
+    nome: string;
 }
 
 export interface ICartao {
+    id: string;
     tipo: string;
     atividade: boolean;
+    nome: string;
 }

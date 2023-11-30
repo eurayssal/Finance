@@ -29,9 +29,10 @@ namespace Finance.Services
         public async Task<Despesa?> GetAsync(string id) =>
             await _despesaCollection.Find(y => y.Id == id).FirstOrDefaultAsync();
 
-        public async Task CreateAsync(DespesaViewModel newDespesa, CadConta cadConta, CadCartao cadCartao)
+        public async Task CreateAsync(DespesaViewModel newDespesa, CadConta cadConta, CadCartao cadCartao, bool isCartao)
         {
             var despesa = new Despesa();
+
             despesa.Nome = newDespesa.Nome;
             despesa.Data = newDespesa.Data;
             despesa.Valor = newDespesa.Valor;
@@ -40,13 +41,12 @@ namespace Finance.Services
             //Se eu selecionei uma conta não é um cartão.
             //Se meu cartão está null o id que eu recebo eu lanço ele no conta
 
-            if(cadConta == null)
+            if (isCartao)
             {
                 despesa.CartaoId = cadCartao.Id;
                 despesa.CartaoName = cadCartao.Nome;
             }
-
-            if(cadCartao == null)
+            else
             {
                 despesa.ContaId = cadConta.Id;
                 despesa.CartaoName = cadConta.Nome;
@@ -55,20 +55,30 @@ namespace Finance.Services
             await _despesaCollection.InsertOneAsync(despesa);
         }
 
-        //public async Task UpdateAsync(string id, DespesaViewModel despesaViewModel, CadConta cadConta, CadCartao cadCartao)
-        //{
-        //    var despesa = await GetAsync(id);
+        public async Task UpdateAsync(string id, DespesaViewModel despesaView, CadConta cadConta, CadCartao cadCartao, bool isCartao)
+        {
+            var despesa = await GetAsync(id);
 
-        //    despesa.Nome = despesaViewModel.Nome;
-        //    despesa.Valor = despesaViewModel.Valor;
-        //    despesa.Data = despesaViewModel.Data;
-        //    despesa.ContaId = despesaViewModel.ContaId;
-        //    despesa.ContaName = cadConta.Nome;
-        //    despesa.CartaoName= cadCartao.Nome;
-        //    despesa.CartaoId = cadCartao.Id;
+            var cartaoId = cadCartao.Id;
+            var contaId = cadConta.Id;
 
-        //    await _despesaCollection.ReplaceOneAsync(x => x.Id == id, despesa);
-        //}
+            despesa.Nome = despesaView.Nome;
+            despesa.Valor = despesaView.Valor;
+            despesa.Data = despesaView.Data;
+
+            if (isCartao)
+            {
+                despesa.CartaoId = cadCartao.Id;
+                despesa.CartaoName = cadCartao.Nome;
+            }
+            else
+            {
+                despesa.ContaId = cadConta.Id;
+                despesa.ContaName = cadConta.Nome;
+            }
+
+            await _despesaCollection.ReplaceOneAsync(x => x.Id == id, despesa);
+        }
 
         public async Task RemoveAsync(string id) =>
             await _despesaCollection.DeleteOneAsync(x => x.Id == id);
@@ -82,7 +92,7 @@ namespace Finance.Services
             return somaDespesas;
         }
 
-        public async Task<List<Despesa>> GetDespesasPorCartaoAsync (string cartaoId, CancellationToken cancellationToken)
+        public async Task<List<Despesa>> GetDespesasPorCartaoAsync(string cartaoId, CancellationToken cancellationToken)
         {
             return await _despesaCollection.Find(despesa => despesa.CartaoId == cartaoId).ToListAsync(cancellationToken);
         }

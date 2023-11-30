@@ -3,11 +3,8 @@ using Finance.Services;
 using Finance.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
+using MongoDB.Driver.Linq;
 using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Finance.Controllers
 {
@@ -19,11 +16,9 @@ namespace Finance.Controllers
         private readonly CadContaService _cadContaService;
         private readonly CadCartaoService _cadCartaoService;
 
-        private readonly IMongoCollection<Despesa> _despesaCollection;
-        private readonly IMongoCollection<CadCartao> _cadCartaoCollection;
-        private readonly IMongoCollection<CadConta> _cadContaCollection;
-
-
+        private readonly IMongoQueryable<Despesa> _despesaCollection;
+        private readonly IMongoQueryable<CadCartao> _cadCartaoCollection;
+        private readonly IMongoQueryable<CadConta> _cadContaCollection;
 
         public DespesaController(DespesaService despesaService,
             CadContaService cadContaService, CadCartaoService cadCartaoService,
@@ -33,8 +28,8 @@ namespace Finance.Controllers
             _cadContaService = cadContaService;
             _cadCartaoService = cadCartaoService;
 
-            _cadCartaoCollection = mongoDatabase.GetCollection<CadCartao>("cadcartao");
-            _cadContaCollection = mongoDatabase.GetCollection<CadConta>("cadconta");
+            _cadCartaoCollection = mongoDatabase.GetCollection<CadCartao>("cadcartao").AsQueryable();
+            _cadContaCollection = mongoDatabase.GetCollection<CadConta>("cadconta").AsQueryable();
         }
 
         [HttpGet]
@@ -66,30 +61,64 @@ namespace Finance.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(DespesaViewModel newDespesa)
         {
-            var cartao = await _cadCartaoCollection.Find(x => x.Id == newDespesa.ContaCartaoId).FirstOrDefaultAsync();
+            var isCartao = await _cadCartaoCollection
+                .Where(w => w.Id == newDespesa.ContaCartaoId)
+                .AnyAsync();
 
-            if (cartao == null)
+
+            var conta = new CadConta();
+            var cartao =  new CadCartao();
+
+            if (isCartao)
             {
-                var conta = await _cadContaCollection.Find(x => x.Id == newDespesa.ContaCartaoId).FirstOrDefaultAsync();
-                await _despesaService.CreateAsync(newDespesa, conta, null);
+                cartao = await _cadCartaoCollection
+                    .Where(w => w.Id == newDespesa.ContaCartaoId)
+                    .SingleAsync();
             }
             else
             {
-                await _despesaService.CreateAsync(newDespesa, null, cartao);
+                conta = await _cadContaCollection
+                    .Where(w => w.Id == newDespesa.ContaCartaoId)
+                    .SingleAsync();
             }
+
+            await _despesaService.CreateAsync(newDespesa: newDespesa, cadConta: conta, cadCartao: cartao, isCartao: isCartao);
 
             return Ok();
         }
 
-        //[HttpPut("{id:length(24)}")]
-        //public async Task<IActionResult> Update(string id, DespesaViewModel despesaViewModel)
-        //{
-        //    var conta = await _cadContaService.GetAsync(despesaViewModel.ContaId);
-        //    var cartao = await _cadCartaoService.GetAsync(despesaViewModel.CartaoId);
-        //    await _despesaService.UpdateAsync(id, despesaViewModel, conta, cartao);
+        [HttpPut("{id:length(24)}")]
+        public async Task<IActionResult> Update(string id, DespesaViewModel despesaView)
+        {
+            // Se o id que eu receber ta no cartao ele vai attualizar ele se nao o contrario
+            var isCartao = await _cadCartaoCollection
+                .Where(w => w.Id == despesaView.ContaCartaoId)
+                .AnyAsync();
 
-        //    return Ok();
-        //}
+            var conta = new CadConta();
+            var cartao = new CadCartao();
+
+            if (isCartao)
+            {
+                cartao = await _cadCartaoCollection
+                    .Where(w => w.Id == despesaView.ContaCartaoId)
+                    .SingleAsync();
+            }
+            else
+            {
+                conta = await _cadContaCollection
+                    .Where(w => w.Id == despesaView.ContaCartaoId)
+                    .SingleAsync();
+            }
+
+            await _despesaService.UpdateAsync(id: id,
+                despesaView: despesaView,
+                cadConta: conta,
+                cadCartao: cartao,
+                isCartao: isCartao);
+
+            return Ok();
+        }
 
         [HttpDelete("{id:length(24)}")]
         public async Task<IActionResult> DeleteDespesa(string id)
