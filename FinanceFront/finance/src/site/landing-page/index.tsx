@@ -8,8 +8,6 @@ import { maskMoney } from '../../utils/mold/money.mold';
 const LandingPageView = () => {
     const api = hookApi();
 
-    const [somaDespesas, setSomaDespesas] = useState<number>(0);
-    const [somaReceitas, setSomaReceitas] = useState<number>(0);
     const [somaDespesaMensal, setSomaDespesasMensal] = useState<number>(0);
     const [somaReceitaMensal, setSomaReceitaMensal] = useState<number>(0);
     const [saldo, setSaldo] = useState<number>(0); //O saldo é referente a receita
@@ -18,8 +16,6 @@ const LandingPageView = () => {
         try {
             const response = await api.get('api/landingpage/saldo');
             console.log(response.data)
-            setSomaDespesas(response.data.somaDespesas);
-            setSomaReceitas(response.data.somaReceitas);
             setSomaDespesasMensal(response.data.somaDespesaMensal);
             setSomaReceitaMensal(response.data.somaReceitaMensal);
 
@@ -37,8 +33,6 @@ const LandingPageView = () => {
             <DisplayFlexUi flexDirection='column'>
                 <h2>LandingPageView</h2>
                 <DisplayFlexUi flexDirection='column'>
-                    <p>Soma de despesas: R$ {maskMoney(somaDespesas)}</p>
-                    <p>Soma de receitas: R$ {maskMoney(somaReceitas)}</p>
                     <p>Saldo disponível: R$ {maskMoney(saldo)}</p>
                     <p>Despesas mensais: R$ {maskMoney(somaDespesaMensal)}</p>
                     <p>Receitas mensais: R$ {maskMoney(somaReceitaMensal)}</p>
