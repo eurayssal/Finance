@@ -9,10 +9,12 @@ import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 import SiteLayout from '../_layout';
 import InputMoneyUi from '../../components/core/input-money';
 import { maskMoney } from '../../utils/mold/money.mold';
+import { maskFormattedDate } from '../../utils/mold/data.mold';
 
 const dataReceita = {
     nome: '',
-    valor: ''
+    valor: '',
+    data: ''
 }
 
 const LancamentoReceitasView = () => {
@@ -104,6 +106,7 @@ const LancamentoReceitasView = () => {
             setNovaReceita({
                 nome: editandoReceita.nome || '',
                 valor: editandoReceita.valor ? editandoReceita.valor.toString() : '',
+                data: editandoReceita.data || ''
             });
         }
     }, [editandoReceita]);
@@ -125,7 +128,10 @@ const LancamentoReceitasView = () => {
             postReceita();
         }
     }
-
+    const handleChangeData = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNovaReceita({ ...novaReceita, data: e.target.value })
+    }
+    
     return (
         <SiteLayout>
             <DisplayFlexUi flexDirection='column'>
@@ -138,6 +144,7 @@ const LancamentoReceitasView = () => {
                             <DisplayFlexUi flexDirection='column' gap={16}>
                                 <InputUi label='Nome' name='Nome' type="text" value={novaReceita.nome} onChange={handleChangeNome} />
                                 <InputMoneyUi name='Valor' label='Valor' value={novaReceita.valor} onChange={handleChangeValor} />
+                                <InputUi name='Data' label='Data' type="date" value={novaReceita.data} onChange={handleChangeData} />
                                 <ButtonUi type="submit">{editandoReceita ? 'Editar Receita' : 'Adicionar Receita'}</ButtonUi>
                                 {editandoReceita && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
                             </DisplayFlexUi>
@@ -148,6 +155,7 @@ const LancamentoReceitasView = () => {
                             {receitas.map((receita) => (
                                 <li key={receita.id}>
                                     {receita.nome} - R$ {maskMoney(receita.valor)}
+                                    - Data: {maskFormattedDate(receita.data)}
                                     <ButtonUi variant='secondary' onClick={() => setEditandoReceita(receita)}>Editar</ButtonUi>
                                     <ButtonUi variant='secondary' onClick={() => excluirReceita(receita)}>Excluir</ButtonUi>
                                 </li>

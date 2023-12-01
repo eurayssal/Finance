@@ -7,6 +7,7 @@ import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 import InputUi from '../../components/form/inputUi';
 import SiteLayout from '../_layout';
 import InputMoneyUi from '../../components/core/input-money';
+import { maskFormattedDate } from '../../utils/mold/data.mold';
 
 const dataDespesa = {
     nome: '',
@@ -79,15 +80,6 @@ const LancamentoDespesasView = () => {
             console.log('Erro: ', error)
         }
     }
-
-    const getFormattedDate = (isoDate: string | number | Date) => {
-        const date = new Date(isoDate);
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear();
-
-        return `${day}/${month}/${year}`;
-    };
 
     useEffect(() => {
         getDespesas();
@@ -302,7 +294,7 @@ const LancamentoDespesasView = () => {
                             {despesas.map((despesa) => (
                                 <li key={despesa.id}>
                                     {despesa.nome} - R$ {despesa.valor}
-                                    - Data: {getFormattedDate(despesa.data)}
+                                    - Data: {maskFormattedDate(despesa.data)}
                                     - Conta: {despesa.contaName ? despesa.contaName : despesa.cartaoName}
                                     - Status: {despesa.status ? 'Paga' : 'Não paga'}
                                     <DisplayFlexUi>

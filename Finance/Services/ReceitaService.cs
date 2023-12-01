@@ -42,5 +42,16 @@ namespace Finance.Services
 
             return somaReceitas;
         }
+        public async Task<decimal> GetReceitaMensalAsync(CancellationToken cancellationToken)
+        {
+            var hoje = DateTime.Today;
+            var inicio = new DateTime(hoje.Year, hoje.Month, 1);
+            var final = inicio.AddMonths(1).AddDays(-1);
+
+            var receitas = await _receitaCollection.Find(x => x.Data >= inicio && x.Data <= final).ToListAsync(cancellationToken);
+            var valor = receitas.Sum(sum => sum.Valor);
+
+            return valor;
+        }
     }
 }

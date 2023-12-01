@@ -11,6 +11,7 @@ const LandingPageView = () => {
     const [somaDespesas, setSomaDespesas] = useState<number>(0);
     const [somaReceitas, setSomaReceitas] = useState<number>(0);
     const [somaDespesaMensal, setSomaDespesasMensal] = useState<number>(0);
+    const [somaReceitaMensal, setSomaReceitaMensal] = useState<number>(0);
     const [saldo, setSaldo] = useState<number>(0); //O saldo é referente a receita
 
     const getSaldo = async () => {
@@ -20,6 +21,8 @@ const LandingPageView = () => {
             setSomaDespesas(response.data.somaDespesas);
             setSomaReceitas(response.data.somaReceitas);
             setSomaDespesasMensal(response.data.somaDespesaMensal);
+            setSomaReceitaMensal(response.data.somaReceitaMensal);
+
             setSaldo(response.data.saldo);
         } catch (error) {
             console.error('Erro ao obter as informações de saldo: ', error);
@@ -38,6 +41,7 @@ const LandingPageView = () => {
                     <p>Soma de receitas: R$ {maskMoney(somaReceitas)}</p>
                     <p>Saldo disponível: R$ {maskMoney(saldo)}</p>
                     <p>Despesas mensais: R$ {maskMoney(somaDespesaMensal)}</p>
+                    <p>Receitas mensais: R$ {maskMoney(somaReceitaMensal)}</p>
                 </DisplayFlexUi>
             </DisplayFlexUi>
         </SiteLayout>

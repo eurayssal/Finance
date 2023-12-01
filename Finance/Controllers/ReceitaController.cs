@@ -25,11 +25,7 @@ namespace Finance.Controllers
         {
             var receita = await _receitaService.GetAsync(id);
 
-            if (receita == null)
-            {
-                return NotFound();
-            }
-            return (receita);
+            return receita;
         }
 
         [HttpPost]
@@ -45,13 +41,10 @@ namespace Finance.Controllers
         {
             var receita = await _receitaService.GetAsync(id);
 
-            if(receita == null)
-            {
-                return NotFound();
-            }
-
             receita.Nome = updateReceita.Nome;
             receita.Valor = updateReceita.Valor;
+            receita.CartaoName = updateReceita.CartaoName;
+            receita.CartaoId = updateReceita.CartaoId;
 
             await _receitaService.UpdateAsync(id, receita);
 

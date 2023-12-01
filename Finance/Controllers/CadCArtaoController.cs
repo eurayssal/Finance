@@ -67,27 +67,5 @@ namespace Finance.Controllers
             });
             
         }
-        //[HttpGet("soma/{cartaoId:length(24)}")]
-        //public async Task<IActionResult> GetSomaFatura (string cartaoId, CancellationToken cancellationToken)
-        //{
-        //    try
-        //    {
-        //        var despesaDoCartao = await _despesaService.GetDespesasPorCartaoAsync(cartaoId, cancellationToken);
-
-        //        if (!despesaDoCartao.Any())
-        //        {
-        //            despesaDoCartao.Add(new Despesa
-        //            {
-        //                Valor = 0
-        //            });
-        //        }
-
-        //        var somaDespesa = despesaDoCartao.Sum(despesa => despesa.Valor);
-        //        return Ok(new { SomaDespesa  = somaDespesa });
-        //    } catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Erro ao calcular a soma das despesas: {ex.Message}");
-        //    }
-        //}
     }
 }

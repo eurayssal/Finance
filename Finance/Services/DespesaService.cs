@@ -38,9 +38,6 @@ namespace Finance.Services
             despesa.Valor = newDespesa.Valor;
             despesa.Status = newDespesa.Status;
 
-            //Se eu selecionei uma conta não é um cartão.
-            //Se meu cartão está null o id que eu recebo eu lanço ele no conta
-
             if (isCartao)
             {
                 despesa.CartaoId = cadCartao.Id;
@@ -67,9 +64,6 @@ namespace Finance.Services
             despesa.Data = despesaView.Data;
             despesa.Status = despesaView.Status;
 
-
-            //Se antes eu tinha cart 
-
             if (isCartao)
             {
                 despesa.CartaoId = cadCartao.Id;
@@ -86,8 +80,6 @@ namespace Finance.Services
                 despesa.CartaoId = null;
                 despesa.CartaoName = null;
             }
-
-            
 
             await _despesaCollection.ReplaceOneAsync(x => x.Id == id, despesa);
         }
@@ -107,7 +99,6 @@ namespace Finance.Services
         public async Task<decimal> GetDespesaMensalAsync(CancellationToken cancellationToken)
         {
             var hoje = DateTime.Today;
-            
             var inicio = new DateTime(hoje.Year, hoje.Month, 1);
             var final = inicio.AddMonths(1).AddDays(-1);
 
