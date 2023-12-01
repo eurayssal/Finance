@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
-import { IReceita, IReceitaCreate } from './model';
+import { IConta, IReceita, IReceitaCreate } from './model';
 import hookApi from '../../hooks/api';
 import { useNavigate } from 'react-router-dom';
 import InputUi from '../../components/core/input';
@@ -14,12 +14,15 @@ import { maskFormattedDate } from '../../utils/mold/data.mold';
 const dataReceita = {
     nome: '',
     valor: '',
-    data: ''
+    data: '',
+    contaId: '',
+    contaName: '',
 }
 
 const LancamentoReceitasView = () => {
     const api = hookApi();
 
+    const [contas, setContas] = useState<Array<IConta>>([]);
     const [receitas, setReceitas] = useState<Array<IReceita>>([]);
     const [novaReceita, setNovaReceita] = useState<IReceitaCreate>(dataReceita);
     const [editandoReceita, setEditandoReceita] = useState<IReceita | null>(null);
@@ -48,6 +51,18 @@ const LancamentoReceitasView = () => {
         }
     };
 
+    const getContas = async () => {
+        try {
+            const response = await api.get('/api/cadconta');
+            setContas(response.data);
+        } catch (error) {
+            console.error('Erro ao obter contas: ', error);
+        }
+    };
+    useEffect(() => {
+        getContas();
+    }, [])
+
     const editarReceita = async () => {
         try {
             if (editandoReceita && editandoReceita.id) {
@@ -55,7 +70,10 @@ const LancamentoReceitasView = () => {
                     `api/receita/${editandoReceita.id}`,
                     {
                         nome: novaReceita.nome,
-                        valor: novaReceita.valor
+                        valor: novaReceita.valor,
+                        data: novaReceita.data,
+                        contaId: novaReceita.contaId || '',
+                        contaName: novaReceita.contaName || ''
                     });
 
                 setReceitas((prev) => {
@@ -106,7 +124,9 @@ const LancamentoReceitasView = () => {
             setNovaReceita({
                 nome: editandoReceita.nome || '',
                 valor: editandoReceita.valor ? editandoReceita.valor.toString() : '',
-                data: editandoReceita.data || ''
+                data: editandoReceita.data,
+                contaId: editandoReceita.contaId || '',
+                contaName: editandoReceita.contaName || ''
             });
         }
     }, [editandoReceita]);
@@ -116,22 +136,31 @@ const LancamentoReceitasView = () => {
     }
 
     const handleChangeValor = (value: string) => {
-        setNovaReceita({ ...novaReceita, valor:  value});
+        setNovaReceita({ ...novaReceita, valor: value });
     }
-    
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+
         if (editandoReceita) {
             editarReceita();
         } else {
             postReceita();
         }
     }
+
     const handleChangeData = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNovaReceita({ ...novaReceita, data: e.target.value })
     }
-    
+
+    const handleChangeConta = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        var conta = contas.find((conta) => conta.id === e.target.value)
+        if(!conta){return}
+
+        setNovaReceita({ ...novaReceita, contaId: conta.id, contaName: conta.nome })
+    }
+
+
     return (
         <SiteLayout>
             <DisplayFlexUi flexDirection='column'>
@@ -139,12 +168,22 @@ const LancamentoReceitasView = () => {
                 <DisplayFlexUi flexDirection='row' gap={32}>
                     <DisplayFlexUi flexDirection='column'>
                         <h3>{editandoReceita ? 'Editar Receita' : 'Adicionar Nova Receita'}</h3>
+                        {/* TODO: Input select */}
 
                         <form onSubmit={handleSubmit}>
                             <DisplayFlexUi flexDirection='column' gap={16}>
                                 <InputUi label='Nome' name='Nome' type="text" value={novaReceita.nome} onChange={handleChangeNome} />
                                 <InputMoneyUi name='Valor' label='Valor' value={novaReceita.valor} onChange={handleChangeValor} />
                                 <InputUi name='Data' label='Data' type="date" value={novaReceita.data} onChange={handleChangeData} />
+                                <label>Conta:
+                                    <select value={novaReceita.contaId} onChange={handleChangeConta}>
+                                        <option value="">Selecione uma conta ou cartão</option>
+                                        {contas.filter((conta) => { return conta.atividade === true && conta.tipo === 'conta' })
+                                            .map((conta: any) => (
+                                                <option key={conta.id} value={conta.id}>{conta.nome}</option>
+                                            ))}
+                                    </select>
+                                </label>
                                 <ButtonUi type="submit">{editandoReceita ? 'Editar Receita' : 'Adicionar Receita'}</ButtonUi>
                                 {editandoReceita && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
                             </DisplayFlexUi>
@@ -156,6 +195,7 @@ const LancamentoReceitasView = () => {
                                 <li key={receita.id}>
                                     {receita.nome} - R$ {maskMoney(receita.valor)}
                                     - Data: {maskFormattedDate(receita.data)}
+                                    {receita.contaName ? `- Conta: ${receita.contaName}` : ''}
                                     <ButtonUi variant='secondary' onClick={() => setEditandoReceita(receita)}>Editar</ButtonUi>
                                     <ButtonUi variant='secondary' onClick={() => excluirReceita(receita)}>Excluir</ButtonUi>
                                 </li>

@@ -198,9 +198,6 @@ const LancamentoDespesasView = () => {
             if (isCartao || isConta) {
                 const id = isConta ? editandoDespesa.contaId : editandoDespesa.cartaoId
 
-                console.log('editandoDespesa.valor', editandoDespesa.valor)
-                //O editandoDespesa.valor esta com R$
-
                 setNovaDespesa({
                     nome: editandoDespesa.nome,
                     contaCartaoId: id,
@@ -255,6 +252,7 @@ const LancamentoDespesasView = () => {
                                 <InputUi name='Nome' label='Nome' type="text" value={novaDespesa.nome} onChange={handleChangeNome} />
                                 <InputMoneyUi name='Valor' label='Valor' value={novaDespesa.valor} onChange={handleChangeValor} />
                                 <InputUi name='Data' label='Data' type="date" value={novaDespesa.data} onChange={handleChangeData} />
+                                {/* TODO: Input select */}
                                 <label>Conta:
                                     <select value={novaDespesa.contaCartaoId} onChange={handleChangeConta}>
                                         <option value="">Selecione uma conta ou cartão</option>
@@ -295,7 +293,7 @@ const LancamentoDespesasView = () => {
                                 <li key={despesa.id}>
                                     {despesa.nome} - R$ {despesa.valor}
                                     - Data: {maskFormattedDate(despesa.data)}
-                                    - Conta: {despesa.contaName ? despesa.contaName : despesa.cartaoName}
+                                    {despesa.contaName ? `- Conta: ${despesa.contaName}` : `- Cartão: ${despesa.cartaoName}`}
                                     - Status: {despesa.status ? 'Paga' : 'Não paga'}
                                     <DisplayFlexUi>
                                         <ButtonUi variant='secondary' onClick={() => setEditandoDespesa(despesa)}>Editar</ButtonUi>

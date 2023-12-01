@@ -13,7 +13,6 @@ namespace Finance.Controllers
         public ReceitaController(ReceitaService receitaService)
         {
             _receitaService = receitaService;
-
         }
 
         [HttpGet]
@@ -43,8 +42,9 @@ namespace Finance.Controllers
 
             receita.Nome = updateReceita.Nome;
             receita.Valor = updateReceita.Valor;
-            receita.CartaoName = updateReceita.CartaoName;
-            receita.CartaoId = updateReceita.CartaoId;
+            receita.ContaName = updateReceita.ContaName;
+            receita.ContaId = updateReceita.ContaId;
+            receita.Data = updateReceita.Data;
 
             await _receitaService.UpdateAsync(id, receita);
 
@@ -53,6 +53,9 @@ namespace Finance.Controllers
                 receita.Id,
                 receita.Nome,
                 receita.Valor,
+                receita.ContaName,
+                receita.ContaId,
+                receita.Data
             });
         }
 
