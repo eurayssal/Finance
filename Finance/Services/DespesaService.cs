@@ -104,11 +104,19 @@ namespace Finance.Services
             return somaDespesas;
         }
 
-        public async Task<List<Despesa>> GetDespesasPorCartaoAsync(string cartaoId, CancellationToken cancellationToken)
+        public async Task<decimal> GetDespesaMensalAsync(CancellationToken cancellationToken)
         {
-            return await _despesaCollection.Find(despesa => despesa.CartaoId == cartaoId).ToListAsync(cancellationToken);
-        }
+            var hoje = DateTime.Today;
+            
+            var inicio = new DateTime(hoje.Year, hoje.Month, 1);
+            var final = inicio.AddMonths(1).AddDays(-1);
 
+            var despesas = await _despesaCollection.Find(x => x.Data >= inicio && x.Data <= final).ToListAsync(cancellationToken);
+
+            var valor = despesas.Sum(sum => sum.Valor);
+
+            return valor;
+        }
     }
 }
 

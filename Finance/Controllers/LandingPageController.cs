@@ -25,8 +25,14 @@ namespace Finance.Controllers
                 var somaDespesas = await _despesaService.SomaDespesaAsync(cancellationToken);
                 var somaReceitas = await _receitaService.SomaReceitaAsync(cancellationToken);
                 var saldo = somaReceitas - somaDespesas;
+                var somaDespesasMensais = await _despesaService.GetDespesaMensalAsync(cancellationToken);
 
-                return Ok(new { SomaDespesas = somaDespesas, SomaReceitas = somaReceitas, Saldo = saldo });
+                return Ok(new { 
+                    SomaDespesas = somaDespesas,
+                    SomaReceitas = somaReceitas,
+                    Saldo = saldo,
+                    SomaDespesaMensal = somaDespesasMensais
+                });
             }
             catch (Exception ex)
             {

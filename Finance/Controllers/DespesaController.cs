@@ -145,5 +145,6 @@ namespace Finance.Controllers
                 return StatusCode(500, $"Erro ao calcular a soma das despesas: {ex.Message}");
             }
         }
+
     }
 }
