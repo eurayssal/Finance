@@ -1,12 +1,14 @@
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import * as jss from './jss'
+import { ICardProps } from './porps';
 
-const CardUi:React.FC<PropsWithChildren> = ({children}) => {
-  return (
-    <jss.ContainerJss>
-        {children}
-    </jss.ContainerJss>
-  )
+const CardUi: React.FC<ICardProps> = (props) => {
+    const { children, width } = props;
+    return (
+        <jss.ContainerJss width={width} {...props}>
+            {children}
+        </jss.ContainerJss>
+    )
 }
 
 export default CardUi

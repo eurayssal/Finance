@@ -23,10 +23,11 @@ const SiteLayout: React.FC<PropsWithChildren> = ({
                     <jss.LogoImg onClick={toLandingPage} src={Logo} />
                 </jss.rigthConteiner>
                 <jss.LeftConteiner>
-                    <ButtonUi onClick={toLancamentoDespesas} variant="borderWhite">Despesas</ButtonUi>
-                    <ButtonUi onClick={toLancamentoReceitas} variant="white">Receitas</ButtonUi>
-                    <ButtonUi onClick={toCadContas} variant="white">Contas</ButtonUi>
-                    <ButtonUi onClick={toCadCartoes} variant="white">Cartões</ButtonUi>
+                    <ButtonUi onClick={toLandingPage} variant="linkWhite">Visão geral</ButtonUi>
+                    <ButtonUi onClick={toLancamentoDespesas} variant="linkWhite">Despesas</ButtonUi>
+                    <ButtonUi onClick={toLancamentoReceitas} variant="linkWhite">Receitas</ButtonUi>
+                    <ButtonUi onClick={toCadContas} variant="linkWhite">Contas</ButtonUi>
+                    <ButtonUi onClick={toCadCartoes} variant="linkWhite">Cartões</ButtonUi>
                 </jss.LeftConteiner>
             </jss.TopBar>
 

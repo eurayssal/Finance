@@ -5,7 +5,7 @@ export const ContainerJss = styled.div(() => {
       display: 'flex',
       padding: '16px',
       borderRadius: 6,
-      border: '5px solid',
-      borderColor: 'hotpink'
+      boxShadow: '0px 1px 15px 1px #d4d3d38f',
+      margin: '16px',
     }
   })

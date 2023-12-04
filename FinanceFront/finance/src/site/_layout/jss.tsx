@@ -45,8 +45,6 @@ export const rigthConteiner = styled.div(() => {
     }
 })
 
-
-
 export const Footer = styled.div(() => {
     return {
         backgroundColor: "#fff",

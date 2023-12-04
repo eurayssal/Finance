@@ -4,6 +4,11 @@ import hookApi from '../../hooks/api';
 import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 import SiteLayout from '../_layout';
 import { maskMoney } from '../../utils/mold/money.mold';
+import CardUi from '../../components/core/card';
+import ButtonUi from '../../components/core/buttons/buttons';
+import { FaPlus, FaMinus } from "react-icons/fa6";
+import { useNavigate } from 'react-router-dom';
+
 
 const LandingPageView = () => {
     const api = hookApi();
@@ -28,14 +33,38 @@ const LandingPageView = () => {
         getSaldo()
     }, [])
 
+    const navigate = useNavigate();
+    const toLancamentoDespesas = () => navigate('/lancamento-despesas')
+    const toLancamentoReceitas = () => navigate('/lancamento-receitas')
+
     return (
         <SiteLayout>
-            <DisplayFlexUi flexDirection='column'>
-                <h2>LandingPageView</h2>
-                <DisplayFlexUi flexDirection='column'>
-                    <p>Saldo disponível: R$ {maskMoney(saldo)}</p>
-                    <p>Despesas mensais: R$ {maskMoney(somaDespesaMensal)}</p>
-                    <p>Receitas mensais: R$ {maskMoney(somaReceitaMensal)}</p>
+            <DisplayFlexUi flexDirection='column' alignItems='center'>
+                <DisplayFlexUi alignItems='center' gap={32}>
+                    <DisplayFlexUi>
+                        <CardUi width={300}>
+                            <DisplayFlexUi flexDirection='column' alignItems='center'>
+                                <p>despesas mensais</p>
+                                <p>R$ {maskMoney(somaDespesaMensal)}</p>
+                            </DisplayFlexUi>
+                        </CardUi>
+                        <CardUi>
+                            <DisplayFlexUi flexDirection='column' alignItems='center'>
+                                <p>receitas mensais</p>
+                                <p>R$ {maskMoney(somaReceitaMensal)}</p>
+                            </DisplayFlexUi>
+                        </CardUi>
+                    </DisplayFlexUi>
+                    <DisplayFlexUi gap={32}>
+                        <DisplayFlexUi flexDirection='column' alignItems='center' >
+                            <ButtonUi onClick={toLancamentoDespesas} ><FaMinus /></ButtonUi>
+                            <p>DESPESA</p>
+                        </DisplayFlexUi>
+                        <DisplayFlexUi flexDirection='column' alignItems='center' >
+                            <ButtonUi onClick={toLancamentoReceitas} ><FaPlus /></ButtonUi>
+                            <p>RECEITA</p>
+                        </DisplayFlexUi>
+                    </DisplayFlexUi>
                 </DisplayFlexUi>
             </DisplayFlexUi>
         </SiteLayout>
