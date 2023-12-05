@@ -19,7 +19,7 @@ const ThemeJss: React.FC<PropsWithChildren> = ({
       },
 
       'body': {
-        backgroundColor: '#F4F6F8'
+        backgroundColor: 'white'
       }
     }}/>
       {children}

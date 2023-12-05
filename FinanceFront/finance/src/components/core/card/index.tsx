@@ -5,7 +5,7 @@ import { ICardProps } from './porps';
 const CardUi: React.FC<ICardProps> = (props) => {
     const { children, width } = props;
     return (
-        <jss.ContainerJss width={width} {...props}>
+        <jss.ContainerJss {...props}>
             {children}
         </jss.ContainerJss>
     )
