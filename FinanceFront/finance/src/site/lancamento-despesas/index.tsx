@@ -98,53 +98,6 @@ const LancamentoDespesasView = () => {
         }
     };
 
-    // const editarDespesa = async () => {
-    //     try {
-    //         if (editandoDespesa && editandoDespesa.id) {
-
-    //             const idEdit = novaDespesa.contaCartaoId;
-    //             const isCartao = cartoes.find((cartao) => cartao.id === idEdit);
-    //             const isConta = cartoes.find((conta) => conta.id === idEdit);
-
-    //             if (isCartao || isConta) {
-    //                 const id = isConta ? isConta.id : isCartao?.id;
-
-    //                 const contaEncontrada = contas.find((conta) => conta.id === id);
-    //                 const cartaoEncontrado = cartoes.find((cartao) => cartao.id === id);
-
-    //                 const nome = contaEncontrada ? contaEncontrada.nome : (cartaoEncontrado ? cartaoEncontrado.nome : '');
-
-    //                 const payload: IDespesaCreate = {
-    //                     nome: nome,
-    //                     valor: novaDespesa.valor,
-    //                     data: novaDespesa.data,
-    //                     status: novaDespesa.status,
-    //                     contaCartaoId: id || '',
-    //                     };
-
-    //                     const response = await api.put<IDespesaCreate>(
-    //                         `api/despesa/${editandoDespesa.id}`,
-    //                         payload
-    //                     );
-
-    //                     setUpdatedespesas((prev) => {
-    //                         const updatedDespesas = prev.map((despesa) =>
-    //                             despesa.contaCartaoId === editandoDespesa.id ? response.data : despesa
-    //                         );
-    //                         return updatedDespesas;
-    //                     });
-    //                 }
-
-    //             setEditandoDespesa(null);
-    //             setNovaDespesa(dataDespesa);
-    //             getDespesas();
-
-    //         }
-    //     } catch (error) {
-    //         console.log('Erro ao editar despesa: ', error);
-    //     }
-    // };
-
     const editarDespesa = async () => {
         try {
             if (editandoDespesa && editandoDespesa.id) {
@@ -154,10 +107,6 @@ const LancamentoDespesasView = () => {
 
 
                 const id = isConta ? isConta.id : isCartao?.id;
-                // const contaEncontrada = contas.find((conta) => conta.id === id);
-                // const cartaoEncontrado = cartoes.find((cartao) => cartao.id === id);
-
-                // const nome = contaEncontrada ? contaEncontrada.nome : (cartaoEncontrado ? cartaoEncontrado.nome : '');
 
                 const payload: IDespesaCreateViewModel = {
                     nome: novaDespesa.nome,

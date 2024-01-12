@@ -17,12 +17,13 @@ export const DropModalJss = styled.div(() => {
 
   export const ModalBoxJss = styled.div(() => {
     return {
-        backgroundColor: '#00ff00', /* Cor verde */
+        backgroundColor: 'white', /* Cor verde */
         padding: '20px',
         borderRadius: '8px',
         maxWidth: '400px',
         width: '100%',
         position: 'relative',
+
     };
   });
 
@@ -36,7 +37,7 @@ export const DropModalJss = styled.div(() => {
 
   export const ModalContent = styled.div(() => {
     return {
-        marginTop: '10px',
+        marginTop: '16px',
 
     };
   });

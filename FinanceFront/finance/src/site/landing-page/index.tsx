@@ -8,7 +8,8 @@ import CardUi from '../../components/core/card';
 import ButtonUi from '../../components/core/buttons/buttons';
 import { FaPlus, FaMinus } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
-import Modal from '../../components/core/modal';
+import ModalUi from '../../components/core/modal';
+import FormModalDespesa from './form.modal-despesa';
 
 
 const LandingPageView = () => {
@@ -41,23 +42,21 @@ const LandingPageView = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleOpenModal = () => {
-      setIsModalOpen(true);
+        setIsModalOpen(true);
     };
-  
+
     const handleCloseModal = () => {
-      setIsModalOpen(false);
+        setIsModalOpen(false);
     };
 
     return (
         <SiteLayout>
-      <button onClick={handleOpenModal}>Abrir Modal</button>
 
-      {isModalOpen && (
-        <Modal title="Título do Modal" onClose={handleCloseModal}>
-          {/* Seu conteúdo aqui */}
-          <p>Conteúdo do modal</p>
-        </Modal>
-      )}
+            {isModalOpen && (
+                <ModalUi title="Adicionar despesa" onClose={handleCloseModal} >
+                    <FormModalDespesa />
+                </ModalUi>)}
+
             <DisplayFlexUi flexDirection='column' alignItems='center'>
                 <DisplayFlexUi alignItems='center' gap={32} flexWrap='wrap' justifyContent='center'>
                     <DisplayFlexUi flexWrap='wrap' justifyContent='center' gap={16}>
@@ -76,7 +75,7 @@ const LandingPageView = () => {
                     </DisplayFlexUi>
                     <DisplayFlexUi gap={32}>
                         <DisplayFlexUi flexDirection='column' alignItems='center' >
-                            <ButtonUi onClick={toLancamentoDespesas} ><FaMinus /></ButtonUi>
+                            <ButtonUi onClick={handleOpenModal} ><FaMinus /></ButtonUi>
                             <p>DESPESA</p>
                         </DisplayFlexUi>
                         <DisplayFlexUi flexDirection='column' alignItems='center' >
