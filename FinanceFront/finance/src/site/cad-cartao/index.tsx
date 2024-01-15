@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
 import hookApi from '../../hooks/api';
 import { ICadCartao, ICartaoCreate } from './model';
@@ -6,14 +7,14 @@ import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 import SiteLayout from '../_layout';
 import InputUi from '../../components/form/inputUi';
 
-    const dataCartao = {
-        nome: '',
-        tipo: 'cartao',
-        valorFatura: '0',
-        diaFechamento: '',
-        diaVencimento: '',
-        atividade: true
-    }
+const dataCartao = {
+    nome: '',
+    tipo: 'cartao',
+    valorFatura: '0',
+    diaFechamento: '',
+    diaVencimento: '',
+    atividade: true
+}
 
 const CadCartaoView: React.FC = () => {
     const api = hookApi();
@@ -29,11 +30,10 @@ const CadCartaoView: React.FC = () => {
         } catch (error) {
             console.error('Erro ao obter contas: ', error);
         }
-    }
-
+    };
     useEffect(() => {
         getCartoes();
-    }, [])
+    }, []);
 
     const postCartao = async () => {
         try {
@@ -42,8 +42,8 @@ const CadCartaoView: React.FC = () => {
             getCartoes();
         } catch (error) {
             console.error('Erro ao adicionar conta: ', error);
-        }
-    }
+        };
+    };
 
     const editarCartao = async () => {
         try {
@@ -56,8 +56,7 @@ const CadCartaoView: React.FC = () => {
                         diaFechamento: novoCartao.diaFechamento ? new Date(novoCartao.diaFechamento) : null,
                         diaVencimento: novoCartao.diaVencimento ? new Date(novoCartao.diaVencimento) : null,
                         atividade: novoCartao.atividade,
-                    }
-                )
+                    });
 
                 setCartoes((prev) => {
                     const props = prev.filter((w) => w.id !== response.data.id);
@@ -72,6 +71,11 @@ const CadCartaoView: React.FC = () => {
             console.log('Erro ao editar despesa: ', error);
         }
     }
+    
+    const cancelarEdicao = () => {
+        setEditandoCartao(null);
+        setNovoCartao(dataCartao);
+    }
 
     const excluirCartao = async (cartao: ICadCartao) => {
         try {
@@ -82,10 +86,6 @@ const CadCartaoView: React.FC = () => {
         }
     }
 
-    const cancelarEdicao = () => {
-        setEditandoCartao(null);
-        setNovoCartao(dataCartao);
-    }
 
     const getFormattedDate = (isoDate: string | number | Date) => {
         const date = new Date(isoDate);

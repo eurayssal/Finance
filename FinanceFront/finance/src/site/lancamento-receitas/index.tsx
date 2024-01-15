@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import { IConta, IReceita, IReceitaCreate } from './model';
 import hookApi from '../../hooks/api';
-import { useNavigate } from 'react-router-dom';
 import InputUi from '../../components/core/input';
 import ButtonUi from '../../components/core/buttons/buttons';
 import DisplayFlexUi from '../../components/core/display/display-flex.ui';
@@ -36,7 +35,6 @@ const LancamentoReceitasView = () => {
             console.log('Erro ao obter receita: ', error);
         }
     };
-
     useEffect(() => {
         getReceitas();
     }, []);
@@ -48,7 +46,7 @@ const LancamentoReceitasView = () => {
             getReceitas();
         } catch (error) {
             console.log('Erro ao adicionar receita: ', error);
-        }
+        };
     };
 
     const getContas = async () => {
@@ -71,15 +69,15 @@ const LancamentoReceitasView = () => {
                     {
                         nome: novaReceita.nome,
                         valor: novaReceita.valor,
-                        data: novaReceita.data,
+                        data: novaReceita.data ? new Date(novaReceita.data) : null,
                         contaId: novaReceita.contaId || '',
                         contaName: novaReceita.contaName || ''
                     });
 
-                setReceitas((prev) => {
-                    const props = prev.filter(w => w.id !== response.data.id);
-                    return [...props, response.data]
-                });
+                    setReceitas((prev) => {
+                        const props = prev.filter(w => w.id !== response.data.id);
+                        return [...props, response.data]
+                    });
 
                 setEditandoReceita(null);
                 setNovaReceita(dataReceita);
@@ -91,8 +89,8 @@ const LancamentoReceitasView = () => {
     };
 
     const cancelarEdicao = () => {
-        setEditandoReceita(null);
         setNovaReceita(dataReceita);
+        setEditandoReceita(null);
     };
 
     const excluirReceita = async (receita: IReceita) => {
@@ -104,7 +102,6 @@ const LancamentoReceitasView = () => {
         }
     };
 
-
     const getSomaReceitas = async () => {
         try {
             const response = await api.get('api/receita/soma');
@@ -113,7 +110,6 @@ const LancamentoReceitasView = () => {
             console.log('Erro: ', error)
         }
     }
-
     useEffect(() => {
         if (receitas.length) { getSomaReceitas() }
 
@@ -124,7 +120,9 @@ const LancamentoReceitasView = () => {
             setNovaReceita({
                 nome: editandoReceita.nome || '',
                 valor: editandoReceita.valor ? editandoReceita.valor.toString() : '',
-                data: editandoReceita.data,
+                data: editandoReceita.data
+                ? new Date(editandoReceita.data).toISOString().split('T')[0]
+                    : '',
                 contaId: editandoReceita.contaId || '',
                 contaName: editandoReceita.contaName || ''
             });
@@ -159,7 +157,6 @@ const LancamentoReceitasView = () => {
 
         setNovaReceita({ ...novaReceita, contaId: conta.id, contaName: conta.nome })
     }
-
 
     return (
         <SiteLayout>
