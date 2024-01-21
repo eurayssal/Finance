@@ -26,8 +26,8 @@ const Input: React.FC<IInputUiProps> = (props) => {
     };
 
     return (<jss.ContainerJss name={`container-${id}`} {...containerProps}>
-        <jss.Label >{label}</jss.Label>
-        <jss.Input {...props} key={id} name={name} isFocused={isFocused}
+        <jss.LabelJss >{label}</jss.LabelJss>
+        <jss.InputJss {...props} key={id} name={name} isFocused={isFocused}
             onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} />
     </jss.ContainerJss>)
 };

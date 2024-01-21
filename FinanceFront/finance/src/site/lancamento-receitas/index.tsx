@@ -9,6 +9,7 @@ import SiteLayout from '../_layout';
 import InputMoneyUi from '../../components/core/input-money';
 import { maskMoney } from '../../utils/mold/money.mold';
 import { maskFormattedDate } from '../../utils/mold/data.mold';
+import SelectUi from '../../components/core/select';
 
 const dataReceita = {
     nome: '',
@@ -34,7 +35,7 @@ const LancamentoReceitasView = () => {
         } catch (error) {
             console.log('Erro ao obter receita: ', error);
         }
-     };
+    };
     useEffect(() => {
         getReceitas();
     }, []);
@@ -62,10 +63,10 @@ const LancamentoReceitasView = () => {
                         contaName: novaReceita.contaName || ''
                     });
 
-                    setReceitas((prev) => {
-                        const props = prev.filter(w => w.id !== response.data.id);
-                        return [...props, response.data]
-                    });
+                setReceitas((prev) => {
+                    const props = prev.filter(w => w.id !== response.data.id);
+                    return [...props, response.data]
+                });
 
                 setEditandoReceita(null);
                 setNovaReceita(dataReceita);
@@ -82,7 +83,7 @@ const LancamentoReceitasView = () => {
                 nome: editandoReceita.nome || '',
                 valor: editandoReceita.valor ? editandoReceita.valor.toString() : '',
                 data: editandoReceita.data
-                ? new Date(editandoReceita.data).toISOString().split('T')[0]
+                    ? new Date(editandoReceita.data).toISOString().split('T')[0]
                     : '',
                 contaId: editandoReceita.contaId || '',
                 contaName: editandoReceita.contaName || ''
@@ -154,7 +155,7 @@ const LancamentoReceitasView = () => {
 
     const handleChangeConta = (e: React.ChangeEvent<HTMLSelectElement>) => {
         var conta = contas.find((conta) => conta.id === e.target.value)
-        if(!conta){return}
+        if (!conta) { return }
 
         setNovaReceita({ ...novaReceita, contaId: conta.id, contaName: conta.nome })
     }
@@ -173,7 +174,7 @@ const LancamentoReceitasView = () => {
                                 <InputUi label='Nome' name='Nome' type="text" value={novaReceita.nome} onChange={handleChangeNome} />
                                 <InputMoneyUi name='Valor' label='Valor' value={novaReceita.valor} onChange={handleChangeValor} />
                                 <InputUi name='Data' label='Data' type="date" value={novaReceita.data} onChange={handleChangeData} />
-                                <label>Conta:
+                                {/* <label>Conta:
                                     <select value={novaReceita.contaId} onChange={handleChangeConta}>
                                         <option value="">Selecione uma conta ou cartão</option>
                                         {contas.filter((conta) => { return conta.atividade === true && conta.tipo === 'conta' })
@@ -181,7 +182,16 @@ const LancamentoReceitasView = () => {
                                                 <option key={conta.id} value={conta.id}>{conta.nome}</option>
                                             ))}
                                     </select>
-                                </label>
+                                </label> */}
+                                <SelectUi
+                                    name={'conta'}
+                                    label={'Conta'}
+                                    value={'Selecione uma conta ou cartão'}
+                                    options={[{ value: '', label: 'Selecione uma conta ou cartão' },
+                                    ...contas
+                                        .filter((conta) => conta.atividade === true && conta.tipo === 'conta')
+                                        .map((conta) => ({ value: conta.id, label: conta.nome })),
+                                    ]} />
                                 <ButtonUi type="submit">{editandoReceita ? 'Editar Receita' : 'Adicionar Receita'}</ButtonUi>
                                 {editandoReceita && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
                             </DisplayFlexUi>

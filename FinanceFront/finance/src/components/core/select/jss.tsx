@@ -1,9 +1,7 @@
 import styled from "@emotion/styled";
-import { IInputUiProps } from "../../form/props";
+import { ISelectPropsUi } from "./props";
 
-export const ContainerJss = styled.div<IInputUiProps>(({
-    minWidth, width, maxWidth
-}) => {
+export const ContainerJss = styled.div<ISelectPropsUi>(({ minWidth, width, maxWidth }) => {
     return {
         display: 'flex',
         flexDirection: 'column',
@@ -16,21 +14,11 @@ export const ContainerJss = styled.div<IInputUiProps>(({
             maxWidth: '100%'
         }
     };
-})
+});
 
-interface IInputJssProps {
-    isFocused: boolean;
-};
-
-export const InputJss = styled.input<IInputJssProps>((props) => {
-    let focusedCss = {};
-    
-    if (props.isFocused) {
-        focusedCss = { 
-            borderColor: '#2196F3'
-        }
-    }
-    
+export const SelectJss = styled.select<ISelectPropsUi>(({
+    minWidth, width, maxWidth
+}) => {
     return {
         borderRadius: '4px',
         border: '1px solid #ccc',
@@ -38,11 +26,16 @@ export const InputJss = styled.input<IInputJssProps>((props) => {
         height: '30px',
         transition: 'border-color 0.2s',
         fontSize: '14px',
-        ...focusedCss
+        minWidth,
+        width,
+        maxWidth,
+
+        '@media (max-width: 900px)': {
+            maxWidth: '100%'
+        }
     };
 });
 
 export const LabelJss = styled.label((props) => {
-    return {
-    }
+    return {};
 });
