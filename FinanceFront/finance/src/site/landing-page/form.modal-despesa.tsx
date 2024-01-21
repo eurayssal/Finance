@@ -5,6 +5,7 @@ import DisplayFlexUi from "../../components/core/display/display-flex.ui";
 import InputUi from "../../components/form/inputUi";
 import InputMoneyUi from "../../components/core/input-money";
 import ButtonUi from "../../components/core/buttons/buttons";
+import FormUi from "../../components/form";
 
 const dataDespesa = {
     nome: '',
@@ -179,7 +180,7 @@ function FormModalDespesa() {
 
 
     return (<DisplayFlexUi flexDirection='column'>
-        <form
+        <FormUi
             onSubmit={(e) => {
                 e.preventDefault();
                 if (editandoDespesa) {
@@ -222,7 +223,7 @@ function FormModalDespesa() {
                     {editandoDespesa && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
                 </DisplayFlexUi>
             </DisplayFlexUi>
-        </form >
+        </FormUi >
     </DisplayFlexUi >)
 }
 

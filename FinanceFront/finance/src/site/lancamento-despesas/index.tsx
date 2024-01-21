@@ -8,6 +8,7 @@ import InputUi from '../../components/form/inputUi';
 import SiteLayout from '../_layout';
 import InputMoneyUi from '../../components/core/input-money';
 import { maskFormattedDate } from '../../utils/mold/data.mold';
+import FormUi from '../../components/form';
 
 const dataDespesa = {
     nome: '',
@@ -188,7 +189,7 @@ const LancamentoDespesasView = () => {
                 <DisplayFlexUi flexDirection='row' gap={32}>
                     <DisplayFlexUi flexDirection='column'>
                         <h3>{editandoDespesa ? 'Editar Despesa' : 'Adicionar Nova Despesa'}</h3>
-                        <form
+                        <FormUi
                             onSubmit={(e) => {
                                 e.preventDefault();
                                 if (editandoDespesa) {
@@ -232,7 +233,7 @@ const LancamentoDespesasView = () => {
                                     {editandoDespesa && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
                                 </DisplayFlexUi>
                             </DisplayFlexUi>
-                        </form>
+                        </FormUi>
                     </DisplayFlexUi>
                     <DisplayFlexUi flexDirection='column'>
 

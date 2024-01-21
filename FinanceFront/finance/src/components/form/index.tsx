@@ -1,23 +1,13 @@
 import React, { PropsWithChildren } from 'react';
 
 interface IFormUiProps extends PropsWithChildren {
-    onSubmitAsync: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
+    onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
 };
 
 const FormUi: React.FC<IFormUiProps> = (props) => {
-    const { children, onSubmitAsync } = props;
+    const { children, onSubmit } = props;
 
-    const handleSubmitAsync = (event: React.FormEvent<HTMLFormElement>) => {
-        if (!event) {
-            return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-        onSubmitAsync && onSubmitAsync(event);
-    };
-
-    return (<form onSubmit={handleSubmitAsync}>
+    return (<form onSubmit={onSubmit}>
         {children}
     </form>)
 };

@@ -10,6 +10,7 @@ import InputMoneyUi from '../../components/core/input-money';
 import { maskMoney } from '../../utils/mold/money.mold';
 import { maskFormattedDate } from '../../utils/mold/data.mold';
 import SelectUi from '../../components/core/select';
+import FormUi from '../../components/form';
 
 const dataReceita = {
     nome: '',
@@ -167,22 +168,11 @@ const LancamentoReceitasView = () => {
                 <DisplayFlexUi flexDirection='row' gap={32}>
                     <DisplayFlexUi flexDirection='column'>
                         <h3>{editandoReceita ? 'Editar Receita' : 'Adicionar Nova Receita'}</h3>
-                        {/* TODO: Input select */}
-
-                        <form onSubmit={handleSubmit}>
+                        <FormUi onSubmit={handleSubmit}>
                             <DisplayFlexUi flexDirection='column' gap={16}>
                                 <InputUi label='Nome' name='Nome' type="text" value={novaReceita.nome} onChange={handleChangeNome} />
                                 <InputMoneyUi name='Valor' label='Valor' value={novaReceita.valor} onChange={handleChangeValor} />
                                 <InputUi name='Data' label='Data' type="date" value={novaReceita.data} onChange={handleChangeData} />
-                                {/* <label>Conta:
-                                    <select value={novaReceita.contaId} onChange={handleChangeConta}>
-                                        <option value="">Selecione uma conta ou cartão</option>
-                                        {contas.filter((conta) => { return conta.atividade === true && conta.tipo === 'conta' })
-                                            .map((conta: any) => (
-                                                <option key={conta.id} value={conta.id}>{conta.nome}</option>
-                                            ))}
-                                    </select>
-                                </label> */}
                                 <SelectUi
                                     name={'conta'}
                                     label={'Conta'}
@@ -195,7 +185,7 @@ const LancamentoReceitasView = () => {
                                 <ButtonUi type="submit">{editandoReceita ? 'Editar Receita' : 'Adicionar Receita'}</ButtonUi>
                                 {editandoReceita && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
                             </DisplayFlexUi>
-                        </form>
+                        </FormUi>
                     </DisplayFlexUi>
                     <DisplayFlexUi flexDirection='column'>
                         <ul>

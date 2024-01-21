@@ -8,6 +8,7 @@ import SiteLayout from "../_layout";
 import InputMoneyUi from "../../components/core/input-money";
 import DisplayFlexUi from "../../components/core/display/display-flex.ui";
 import { maskMoney } from "../../utils/mold/money.mold";
+import FormUi from "../../components/form";
 
 const dataConta = {
     nome: '',
@@ -107,7 +108,7 @@ const CadContasView = () => {
             <DisplayFlexUi flexDirection="column">
                 <h2>Cadastro de Contas</h2>
                 <DisplayFlexUi flexDirection='row' gap={32}>
-                    <form
+                    <FormUi
                         onSubmit={(e) => {
                             e.preventDefault();
                             if (editandoConta) {
@@ -135,7 +136,7 @@ const CadContasView = () => {
                                 {editandoConta && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
                             </DisplayFlexUi>
                         </DisplayFlexUi>
-                    </form>
+                    </FormUi>
 
                     <DisplayFlexUi flexDirection="column">
                         <ul>

@@ -6,6 +6,7 @@ import ButtonUi from '../../components/core/buttons/buttons';
 import DisplayFlexUi from '../../components/core/display/display-flex.ui';
 import SiteLayout from '../_layout';
 import InputUi from '../../components/form/inputUi';
+import FormUi from '../../components/form';
 
 const dataCartao = {
     nome: '',
@@ -119,8 +120,7 @@ const CadCartaoView: React.FC = () => {
                 <h2>Cadastro de Cartões</h2>
                 <DisplayFlexUi flexDirection='row' gap={32}>
                     <DisplayFlexUi flexDirection='column'>
-                        <form
-                            onSubmit={(e) => {
+                        <FormUi onSubmit={(e) => {
                                 e.preventDefault();
                                 if (editandoCartao) {
                                     editarCartao()
@@ -158,7 +158,7 @@ const CadCartaoView: React.FC = () => {
                                     {editandoCartao && <ButtonUi type="button" onClick={cancelarEdicao}>Cancelar Edição</ButtonUi>}
                                 </DisplayFlexUi>
                             </DisplayFlexUi>
-                        </form>
+                        </FormUi>
                     </DisplayFlexUi>
                     <ul>
                         {cartoes
