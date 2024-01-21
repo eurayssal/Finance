@@ -19,7 +19,7 @@ namespace Finance.Controllers
         public async Task<ActionResult<List<CadConta>>> GetContas()
         {
             var contas = await _cadContaService.GetAsync();
-            return Ok(contas);
+            return contas;
         }
 
         [HttpPost]

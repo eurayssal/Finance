@@ -34,7 +34,7 @@ const LancamentoReceitasView = () => {
         } catch (error) {
             console.log('Erro ao obter receita: ', error);
         }
-    };
+     };
     useEffect(() => {
         getReceitas();
     }, []);
@@ -48,18 +48,6 @@ const LancamentoReceitasView = () => {
             console.log('Erro ao adicionar receita: ', error);
         };
     };
-
-    const getContas = async () => {
-        try {
-            const response = await api.get('/api/cadconta');
-            setContas(response.data);
-        } catch (error) {
-            console.error('Erro ao obter contas: ', error);
-        }
-    };
-    useEffect(() => {
-        getContas();
-    }, [])
 
     const editarReceita = async () => {
         try {
@@ -88,6 +76,20 @@ const LancamentoReceitasView = () => {
         }
     };
 
+    useEffect(() => {
+        if (editandoReceita) {
+            setNovaReceita({
+                nome: editandoReceita.nome || '',
+                valor: editandoReceita.valor ? editandoReceita.valor.toString() : '',
+                data: editandoReceita.data
+                ? new Date(editandoReceita.data).toISOString().split('T')[0]
+                    : '',
+                contaId: editandoReceita.contaId || '',
+                contaName: editandoReceita.contaName || ''
+            });
+        }
+    }, [editandoReceita]);
+
     const cancelarEdicao = () => {
         setNovaReceita(dataReceita);
         setEditandoReceita(null);
@@ -102,6 +104,18 @@ const LancamentoReceitasView = () => {
         }
     };
 
+    const getContas = async () => {
+        try {
+            const response = await api.get('/api/cadconta');
+            setContas(response.data);
+        } catch (error) {
+            console.error('Erro ao obter contas: ', error);
+        }
+    };
+    useEffect(() => {
+        getContas();
+    }, [])
+
     const getSomaReceitas = async () => {
         try {
             const response = await api.get('api/receita/soma');
@@ -111,23 +125,10 @@ const LancamentoReceitasView = () => {
         }
     }
     useEffect(() => {
-        if (receitas.length) { getSomaReceitas() }
-
-    }, [receitas])
-
-    useEffect(() => {
-        if (editandoReceita) {
-            setNovaReceita({
-                nome: editandoReceita.nome || '',
-                valor: editandoReceita.valor ? editandoReceita.valor.toString() : '',
-                data: editandoReceita.data
-                ? new Date(editandoReceita.data).toISOString().split('T')[0]
-                    : '',
-                contaId: editandoReceita.contaId || '',
-                contaName: editandoReceita.contaName || ''
-            });
+        if (receitas.length) {
+            getSomaReceitas()
         }
-    }, [editandoReceita]);
+    }, [receitas])
 
     const handleChangeNome = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNovaReceita({ ...novaReceita, nome: e.target.value });

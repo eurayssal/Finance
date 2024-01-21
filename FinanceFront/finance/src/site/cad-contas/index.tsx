@@ -30,7 +30,6 @@ const CadContasView = () => {
             console.error('Erro ao obter contas: ', error);
         }
     };
-
     useEffect(() => {
         getContas();
     }, []);
@@ -71,6 +70,17 @@ const CadContasView = () => {
         }
     }
 
+    useEffect(() => {
+        if (editandoConta) {
+            setNovaConta({
+                nome: editandoConta.nome || '',
+                saldo: editandoConta.saldo ? editandoConta.saldo.toString() : '',
+                atividade: editandoConta.atividade,
+                tipo: editandoConta.tipo
+            })
+        }
+    }, [editandoConta])
+
     const cancelarEdicao = () => {
         setEditandoConta(null);
         setNovaConta(dataConta);
@@ -84,17 +94,6 @@ const CadContasView = () => {
             console.error('Erro ao excluir conta: ', error);
         }
     };
-
-    useEffect(() => {
-        if (editandoConta) {
-            setNovaConta({
-                nome: editandoConta.nome || '',
-                saldo: editandoConta.saldo ? editandoConta.saldo.toString() : '',
-                atividade: editandoConta.atividade,
-                tipo: editandoConta.tipo
-            })
-        }
-    }, [editandoConta])
 
     const handleChangeNome = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNovaConta({ ...novaConta, nome: e.target.value })
@@ -140,8 +139,7 @@ const CadContasView = () => {
 
                     <DisplayFlexUi flexDirection="column">
                         <ul>
-                            {contas
-                                .map((conta) => (
+                            {contas.map((conta) => (
                                     <li key={conta.id}>
                                         {conta.nome} - Saldo: R$ {maskMoney(conta.saldo)} - Status: {conta.atividade ? 'Ativa' : 'Inativa'}
                                         <ButtonUi onClick={() => setEditandoConta(conta)}>Editar</ButtonUi>

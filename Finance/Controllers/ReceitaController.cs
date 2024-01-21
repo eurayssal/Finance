@@ -16,8 +16,11 @@ namespace Finance.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Receita>> Get() =>
-            await _receitaService.GetAsync();
+        public async Task<List<Receita>> Get()
+        {
+            List<Receita> receita = await _receitaService.GetAsync();
+            return receita;
+        }
 
         [HttpGet("{id:length(24)}")]
         public async Task<ActionResult<Receita>> Get(string id)
